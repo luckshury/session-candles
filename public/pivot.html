@@ -14,8 +14,48 @@
       padding: 16px;
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 16px;
     }
+
+    /* ── Tabs ── */
+    .tabs {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid #2a2a2a;
+      flex-shrink: 0;
+    }
+    .tabs button {
+      background: none;
+      border: none;
+      color: #666;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 10px 20px;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .tabs button:hover { color: #aaa; }
+    .tabs button.active { color: #e0e0e0; border-bottom-color: #32D695; }
+
+    .sub-tabs {
+      display: flex;
+      gap: 0;
+      margin-bottom: 12px;
+    }
+    .sub-tabs button {
+      background: #252525;
+      border: 1px solid #333;
+      color: #888;
+      font-size: 12px;
+      padding: 6px 16px;
+      cursor: pointer;
+      border-radius: 0;
+      transition: all 0.15s;
+    }
+    .sub-tabs button:first-child { border-radius: 4px 0 0 4px; }
+    .sub-tabs button:last-child { border-radius: 0 4px 4px 0; }
+    .sub-tabs button.active { background: #32D695; color: #161616; border-color: #32D695; font-weight: 600; }
 
     /* ── Cards ── */
     .card {
@@ -24,7 +64,6 @@
       border-radius: 8px;
       padding: 16px;
     }
-
     .card h2 {
       font-size: 14px;
       color: #888;
@@ -33,240 +72,21 @@
       margin-bottom: 12px;
     }
 
-    /* ── Today Summary ── */
-    .today-summary {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: 12px;
+    /* ── Layout ── */
+    .split-60-40 { display: grid; grid-template-columns: 60% 40%; gap: 16px; }
+    .split-65-35 { display: grid; grid-template-columns: 65% 35%; gap: 16px; }
+
+    @media (max-width: 900px) {
+      .split-60-40, .split-65-35 { grid-template-columns: 1fr; }
     }
 
-    .stat-box {
-      background: #252525;
-      border-radius: 6px;
-      padding: 12px;
-      text-align: center;
-    }
-
-    .stat-box .stat-label {
-      font-size: 11px;
-      color: #666;
-      text-transform: uppercase;
-      letter-spacing: 0.3px;
-    }
-
-    .stat-box .stat-value {
-      font-size: 20px;
-      font-weight: 700;
-      margin-top: 4px;
-      font-family: 'SF Mono', 'Fira Code', monospace;
-    }
-
-    .stat-box .stat-sub {
-      font-size: 11px;
-      color: #666;
-      margin-top: 2px;
-    }
-
-    /* ── Hourly Heatmap ── */
-    .heatmap-grid {
-      display: grid;
-      grid-template-columns: repeat(24, 1fr);
-      gap: 2px;
-    }
-
-    .heatmap-cell {
-      aspect-ratio: 1;
-      border-radius: 3px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 9px;
-      font-weight: 600;
-      color: rgba(255,255,255,0.7);
-      position: relative;
-      cursor: default;
-      min-height: 32px;
-    }
-
-    .heatmap-cell .cell-hour {
-      font-size: 8px;
-      color: #666;
-      position: absolute;
-      bottom: 1px;
-    }
-
-    .heatmap-labels {
-      display: grid;
-      grid-template-columns: repeat(24, 1fr);
-      gap: 2px;
-      margin-top: 2px;
-    }
-
-    .heatmap-labels span {
-      text-align: center;
-      font-size: 10px;
-      color: #555;
-    }
-
-    .heatmap-row-label {
-      font-size: 12px;
-      color: #888;
-      margin-bottom: 6px;
-      font-weight: 500;
-    }
-
-    .heatmap-section { margin-bottom: 12px; }
-
-    /* ── Session Zones ── */
-    .session-zones {
-      display: flex;
-      gap: 2px;
-      margin-bottom: 8px;
-    }
-
-    .session-zone {
-      flex: 1;
-      text-align: center;
-      padding: 3px 0;
-      font-size: 10px;
-      font-weight: 600;
-      border-radius: 3px;
-    }
-
-    /* ── Day of Week ── */
-    .dow-grid {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 6px;
-    }
-
-    .dow-cell {
-      background: #252525;
-      border-radius: 6px;
-      padding: 10px 6px;
-      text-align: center;
-    }
-
-    .dow-cell .dow-name {
-      font-size: 11px;
-      color: #888;
-      font-weight: 500;
-    }
-
-    .dow-cell .dow-bar {
-      height: 40px;
-      margin: 6px auto;
-      width: 16px;
-      border-radius: 3px;
-      position: relative;
-      background: #333;
-    }
-
-    .dow-cell .dow-fill {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      border-radius: 3px;
-      transition: height 0.3s;
-    }
-
-    .dow-cell .dow-pct {
-      font-size: 12px;
-      font-weight: 700;
-      font-family: 'SF Mono', 'Fira Code', monospace;
-    }
-
-    /* ── Distance Histogram ── */
-    .histogram {
-      display: flex;
-      align-items: flex-end;
-      gap: 1px;
-      height: 100px;
-      margin-top: 8px;
-    }
-
-    .hist-bar {
-      flex: 1;
-      border-radius: 2px 2px 0 0;
-      min-width: 4px;
-      position: relative;
-      cursor: default;
-      transition: opacity 0.15s;
-    }
-
-    .hist-bar:hover { opacity: 0.8; }
-
-    .hist-labels {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 4px;
-      font-size: 10px;
-      color: #555;
-    }
-
-    .hist-stats {
-      display: flex;
-      gap: 20px;
-      margin-top: 8px;
-      font-size: 12px;
-    }
-
-    .hist-stats span {
-      color: #888;
-    }
-
-    .hist-stats strong {
-      color: #e0e0e0;
-      font-family: 'SF Mono', 'Fira Code', monospace;
-    }
-
-    /* ── Insights ── */
-    .insights-list {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .insight {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      padding: 10px 12px;
-      background: #252525;
-      border-radius: 6px;
-      border-left: 3px solid;
-    }
-
-    .insight.green { border-color: #32D695; }
-    .insight.yellow { border-color: #E6A817; }
-    .insight.red { border-color: #FF4C61; }
-
-    .insight .dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      flex-shrink: 0;
-      margin-top: 4px;
-    }
-
-    .insight.green .dot { background: #32D695; }
-    .insight.yellow .dot { background: #E6A817; }
-    .insight.red .dot { background: #FF4C61; }
-
-    .insight .insight-text {
-      font-size: 13px;
-      line-height: 1.4;
-    }
-
-    /* ── Daily Table ── */
-    .pivot-table-data {
+    /* ── Probability Table ── */
+    .prob-table {
       width: 100%;
       border-collapse: collapse;
       font-size: 12px;
     }
-
-    .pivot-table-data th {
+    .prob-table th {
       text-align: left;
       padding: 6px 8px;
       border-bottom: 1px solid #333;
@@ -277,60 +97,199 @@
       position: sticky;
       top: 0;
       background: #1e1e1e;
+      z-index: 2;
     }
-
-    .pivot-table-data td {
+    .prob-table td {
       padding: 5px 8px;
       border-bottom: 1px solid #222;
       font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 12px;
+    }
+    .prob-table tr:hover td { background: #252525; }
+    .prob-table tr.current-hour td {
+      outline: 2px solid #32D695;
+      outline-offset: -1px;
     }
 
-    .pivot-table-data tr:hover td { background: #252525; }
+    .prob-table .pct-bar {
+      display: inline-block;
+      height: 14px;
+      border-radius: 2px;
+      vertical-align: middle;
+      margin-right: 6px;
+      min-width: 2px;
+    }
+
+    .session-asia td:first-child { border-left: 3px solid #4A90D9; }
+    .session-london td:first-child { border-left: 3px solid #E6A817; }
+    .session-ny td:first-child { border-left: 3px solid #D94A4A; }
+    .session-close td:first-child { border-left: 3px solid #8B5CF6; }
+
+    .last-cell { cursor: pointer; color: #4A90D9; text-decoration: underline; text-decoration-style: dotted; }
+    .last-cell:hover { color: #6AB0F9; }
+
+    /* ── Popover ── */
+    .popover {
+      position: fixed;
+      background: #252525;
+      border: 1px solid #444;
+      border-radius: 6px;
+      padding: 10px;
+      z-index: 100;
+      min-width: 180px;
+      max-width: 260px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      font-size: 12px;
+    }
+    .popover h4 { color: #aaa; margin-bottom: 6px; font-size: 11px; text-transform: uppercase; }
+    .popover ul { list-style: none; }
+    .popover li { padding: 2px 0; color: #ccc; font-family: 'SF Mono','Fira Code',monospace; }
+
+    /* ── Insights Panel ── */
+    .insight-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 10px;
+      background: #252525;
+      border-radius: 6px;
+      margin-bottom: 6px;
+      font-size: 12px;
+      cursor: pointer;
+      border-left: 3px solid #333;
+      transition: background 0.15s;
+    }
+    .insight-row:hover { background: #2a2a2a; }
+    .insight-row .insight-label { color: #aaa; }
+    .insight-row .insight-val { font-family: 'SF Mono','Fira Code',monospace; font-weight: 600; }
+
+    .indicator {
+      display: inline-block;
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      margin-left: 6px;
+      vertical-align: middle;
+    }
+    .ind-green { background: #32D695; }
+    .ind-yellow { background: #E6A817; }
+    .ind-red { background: #FF4C61; }
+
+    .insight-section { margin-bottom: 14px; }
+    .insight-section h3 { font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 6px; }
+
+    /* ── Histograms ── */
+    .histogram-container { margin-bottom: 16px; }
+    .histogram-title { font-size: 13px; color: #aaa; margin-bottom: 8px; font-weight: 500; }
+    .histogram {
+      display: flex;
+      align-items: flex-end;
+      gap: 1px;
+      height: 120px;
+    }
+    .hist-bar {
+      flex: 1;
+      border-radius: 2px 2px 0 0;
+      min-width: 3px;
+      cursor: pointer;
+      transition: opacity 0.15s, filter 0.15s;
+      position: relative;
+    }
+    .hist-bar:hover { opacity: 0.8; }
+    .hist-bar.highlighted { filter: brightness(1.5); outline: 1px solid #fff; }
+    .hist-bar.dimmed { opacity: 0.3; }
+
+    .hist-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 4px;
+      font-size: 10px;
+      color: #555;
+    }
+    .hist-stats {
+      display: flex;
+      gap: 16px;
+      margin-top: 6px;
+      font-size: 12px;
+      flex-wrap: wrap;
+    }
+    .hist-stats span { color: #888; }
+    .hist-stats strong { color: #e0e0e0; font-family: 'SF Mono','Fira Code',monospace; }
+
+    .hist-zero-line {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      border-top: 1px dashed #555;
+      pointer-events: none;
+    }
+    .histogram-wrapper { position: relative; }
+
+    /* ── Modal ── */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal {
+      background: #1e1e1e;
+      border: 1px solid #3a3a3a;
+      border-radius: 8px;
+      padding: 20px;
+      max-width: 600px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    .modal h3 { color: #aaa; margin-bottom: 12px; font-size: 14px; }
+    .modal table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .modal th { text-align: left; padding: 5px 6px; border-bottom: 1px solid #333; color: #666; font-size: 11px; text-transform: uppercase; }
+    .modal td { padding: 4px 6px; border-bottom: 1px solid #222; font-family: 'SF Mono','Fira Code',monospace; }
+    .modal-close {
+      float: right;
+      background: none;
+      border: none;
+      color: #888;
+      font-size: 20px;
+      cursor: pointer;
+      padding: 0 4px;
+    }
+    .modal-close:hover { color: #e0e0e0; }
 
     .p1-high { color: #FF4C61; }
     .p1-low { color: #32D695; }
 
-    .table-scroll {
-      max-height: 300px;
-      overflow-y: auto;
+    /* ── Color scheme selector ── */
+    .scheme-select { margin-left: auto; }
+
+    /* ── Summary tab ── */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
     }
+    .stat-box {
+      background: #252525;
+      border-radius: 6px;
+      padding: 12px;
+      text-align: center;
+    }
+    .stat-box .stat-label { font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: 0.3px; }
+    .stat-box .stat-value { font-size: 20px; font-weight: 700; margin-top: 4px; font-family: 'SF Mono','Fira Code',monospace; }
+    .stat-box .stat-sub { font-size: 11px; color: #666; margin-top: 2px; }
+
+    .table-scroll { max-height: 350px; overflow-y: auto; }
 
     /* ── Weekday Filter ── */
-    .weekday-filter {
-      display: flex;
-      gap: 4px;
-      margin-left: 8px;
-    }
-
-    .weekday-filter button {
-      font-size: 11px;
-      padding: 4px 6px;
-      min-width: 32px;
-    }
-
-    .weekday-filter button.active {
-      background: #32D695;
-      color: #161616;
-      border-color: #32D695;
-    }
-
-    /* ── Two Column ── */
-    .two-col {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-    }
-
-    @media (max-width: 768px) {
-      .two-col { grid-template-columns: 1fr; }
-      .heatmap-grid { grid-template-columns: repeat(12, 1fr); }
-      .heatmap-labels { grid-template-columns: repeat(12, 1fr); }
-      .dow-grid { grid-template-columns: repeat(4, 1fr); }
-    }
+    .weekday-filter { display: flex; gap: 4px; margin-left: 8px; }
+    .weekday-filter button { font-size: 11px; padding: 4px 6px; min-width: 32px; }
+    .weekday-filter button.active { background: #32D695; color: #161616; border-color: #32D695; }
 
     @media (max-width: 600px) {
-      .content { padding: 10px; gap: 14px; }
-      .today-summary { grid-template-columns: repeat(2, 1fr); }
+      .content { padding: 10px; gap: 10px; }
+      .tabs button { padding: 8px 12px; font-size: 12px; }
     }
   </style>
 </head>
@@ -398,26 +357,43 @@
       <button data-day="6">S</button>
       <button data-day="0">S</button>
     </div>
+
+    <span class="label scheme-select">Colors</span>
+    <select id="scheme-select">
+      <option value="green">Green</option>
+      <option value="viridis">Viridis</option>
+      <option value="plasma">Plasma</option>
+      <option value="inferno">Inferno</option>
+      <option value="turbo">Turbo</option>
+      <option value="blues">Blues</option>
+    </select>
+  </div>
+
+  <div class="tabs" id="main-tabs">
+    <button class="active" data-tab="time">Time</button>
+    <button data-tab="distance">Distance</button>
+    <button data-tab="summary">Summary</button>
   </div>
 
   <div class="content" id="content">
-    <div class="loading" id="loading" style="text-align:center;padding:40px;">Loading pivot data...</div>
+    <div style="text-align:center;padding:40px;color:#666;">Loading pivot data...</div>
   </div>
 
   <script>
     // ── State ──
     let allPivots = [];
     let filteredPivots = [];
+    let weeklyPivots = [];
     let hourlyCandles = [];
     let weekdayFilter = 'all';
+    let activeTab = 'time';
+    let activeSubTab = 'daily';
+    let colorScheme = 'green';
+    let activePopover = null;
+    let highlightedInsight = null;
 
     const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-    const SESSION_COLORS = {
-      Asia: { bg: 'rgba(74,144,217,0.15)', text: '#4A90D9' },
-      London: { bg: 'rgba(230,168,23,0.15)', text: '#E6A817' },
-      'New York': { bg: 'rgba(217,74,74,0.15)', text: '#D94A4A' },
-      Close: { bg: 'rgba(139,92,246,0.15)', text: '#8B5CF6' },
-    };
+    const DAY_NAMES_FULL = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 
     function getSession(hour) {
       if (hour >= 0 && hour < 6) return 'Asia';
@@ -426,10 +402,56 @@
       return 'Close';
     }
 
+    function getSessionClass(hour) {
+      if (hour >= 0 && hour < 6) return 'session-asia';
+      if (hour >= 6 && hour < 12) return 'session-london';
+      if (hour >= 12 && hour < 20) return 'session-ny';
+      return 'session-close';
+    }
+
+    function getDaySession(dow) {
+      // For weekly view, no session zones — return empty
+      return '';
+    }
+
+    // ── Color Schemes ──
+    const COLOR_PALETTES = {
+      green: [[37,37,37],[50,214,149]],
+      viridis: [[68,1,84],[72,40,120],[62,74,137],[49,104,142],[38,130,142],[31,158,137],[53,183,121],[109,205,89],[180,222,44],[253,231,37]],
+      plasma: [[13,8,135],[75,3,161],[126,3,168],[168,34,150],[203,70,121],[229,107,93],[248,148,65],[253,195,40],[240,249,33]],
+      inferno: [[0,0,4],[22,11,57],[66,10,104],[106,23,110],[147,38,103],[188,55,84],[221,81,58],[243,118,27],[252,165,10],[246,215,70],[252,255,164]],
+      turbo: [[48,18,59],[67,85,168],[56,151,211],[39,203,186],[47,237,131],[122,252,56],[210,237,20],[253,195,12],[248,137,7],[220,68,8],[122,4,3]],
+      blues: [[37,37,37],[30,60,114],[0,100,180],[0,150,220],[80,200,255]],
+    };
+
+    function interpolatePalette(palette, t) {
+      t = Math.max(0, Math.min(1, t));
+      if (t === 0) return palette[0];
+      if (t === 1) return palette[palette.length - 1];
+      const idx = t * (palette.length - 1);
+      const lo = Math.floor(idx);
+      const hi = Math.min(lo + 1, palette.length - 1);
+      const f = idx - lo;
+      return [
+        Math.round(palette[lo][0] + (palette[hi][0] - palette[lo][0]) * f),
+        Math.round(palette[lo][1] + (palette[hi][1] - palette[lo][1]) * f),
+        Math.round(palette[lo][2] + (palette[hi][2] - palette[lo][2]) * f),
+      ];
+    }
+
+    function schemeColor(pct, max) {
+      if (max === 0) return '#252525';
+      const t = pct / max;
+      if (t < 0.05) return '#252525';
+      const pal = COLOR_PALETTES[colorScheme] || COLOR_PALETTES.green;
+      const [r, g, b] = interpolatePalette(pal, t);
+      return `rgb(${r},${g},${b})`;
+    }
+
     // ── Fetch ──
     async function fetchCandles(exchange, symbol, days) {
       const now = Math.floor(Date.now() / 1000);
-      const from = now - (days + 1) * 86400; // extra day for safety
+      const from = now - (days + 1) * 86400;
       const url = `/api/candles?exchange=${exchange}&symbol=${encodeURIComponent(symbol)}&tf=1h&from=${from}&to=${now}`;
       const resp = await fetch(url);
       const json = await resp.json();
@@ -446,7 +468,6 @@
 
     // ── Calculate Daily Pivots ──
     function calculateDailyPivots(candles) {
-      // STEP 1: Group candles by UTC date
       const days = {};
       for (const c of candles) {
         const key = new Date(c.timestamp).toISOString().slice(0, 10);
@@ -456,45 +477,36 @@
 
       const pivots = [];
       for (const [date, dayCandles] of Object.entries(days)) {
-        if (dayCandles.length < 12) continue; // skip incomplete days
-
-        // Sort chronologically
+        if (dayCandles.length < 12) continue;
         dayCandles.sort((a, b) => a.timestamp - b.timestamp);
 
         const dayOpen = dayCandles[0].open;
         const dayClose = dayCandles[dayCandles.length - 1].close;
         const dayOfWeek = new Date(dayCandles[0].timestamp).getUTCDay();
 
-        // STEP 3: Find absolute daily high and low
         let dailyHigh = -Infinity, dailyLow = Infinity;
         for (const c of dayCandles) {
           if (c.high > dailyHigh) dailyHigh = c.high;
           if (c.low < dailyLow) dailyLow = c.low;
         }
 
-        // STEP 4: Find WHEN each extreme was FIRST reached
         let firstHighHour = -1, firstLowHour = -1;
         let firstHighTimestamp = Infinity, firstLowTimestamp = Infinity;
 
         for (const c of dayCandles) {
-          // Did this candle first reach the daily high?
           if (firstHighHour === -1 && c.high >= dailyHigh) {
             firstHighHour = c.hour;
             firstHighTimestamp = c.timestamp;
           }
-          // Did this candle first reach the daily low?
           if (firstLowHour === -1 && c.low <= dailyLow) {
             firstLowHour = c.hour;
             firstLowTimestamp = c.timestamp;
           }
-          // Exit early if both found
           if (firstHighHour !== -1 && firstLowHour !== -1) break;
         }
 
-        // STEP 5: Handle same-hour case (high and low in same candle)
         let highCameFirst;
         if (firstHighTimestamp === firstLowTimestamp) {
-          // Use OHLC logic: if bearish candle, high came first
           const candle = dayCandles.find(c => c.timestamp === firstHighTimestamp);
           const isBullish = candle && candle.close >= candle.open;
           highCameFirst = !isBullish;
@@ -502,7 +514,6 @@
           highCameFirst = firstHighTimestamp < firstLowTimestamp;
         }
 
-        // STEP 6: Assign P1 and P2
         const p1 = highCameFirst
           ? { price: dailyHigh, hour: firstHighHour, type: 'high' }
           : { price: dailyLow, hour: firstLowHour, type: 'low' };
@@ -511,8 +522,10 @@
           ? { price: dailyLow, hour: firstLowHour, type: 'low' }
           : { price: dailyHigh, hour: firstHighHour, type: 'high' };
 
-        const openToP1 = Math.abs(p1.price - dayOpen) / dayOpen * 100;
-        const p1ToP2 = Math.abs(p2.price - p1.price) / p1.price * 100;
+        const openToP1Signed = (p1.price - dayOpen) / dayOpen * 100;
+        const openToP1 = Math.abs(openToP1Signed);
+        const p1ToP2Signed = (p2.price - p1.price) / p1.price * 100;
+        const p1ToP2 = Math.abs(p1ToP2Signed);
         const range = (dailyHigh - dailyLow) / dailyLow * 100;
 
         pivots.push({
@@ -520,43 +533,157 @@
           high: dailyHigh, low: dailyLow,
           highHour: firstHighHour, lowHour: firstLowHour,
           range, p1, p2, openToP1, p1ToP2,
+          openToP1Signed, p1ToP2Signed,
         });
       }
 
       return pivots.sort((a, b) => a.date.localeCompare(b.date));
     }
 
-    // ── Hourly Stats ──
+    // ── Calculate Weekly Pivots ──
+    function calculateWeeklyPivots(dailyPivots) {
+      // Group by ISO week (Mon-Sun)
+      const weeks = {};
+      for (const dp of dailyPivots) {
+        const d = new Date(dp.date + 'T00:00:00Z');
+        // Get Monday of this week
+        const day = d.getUTCDay();
+        const diff = (day === 0 ? -6 : 1) - day;
+        const monday = new Date(d);
+        monday.setUTCDate(monday.getUTCDate() + diff);
+        const weekKey = monday.toISOString().slice(0, 10);
+        if (!weeks[weekKey]) weeks[weekKey] = [];
+        weeks[weekKey].push(dp);
+      }
+
+      const result = [];
+      for (const [weekStart, days] of Object.entries(weeks)) {
+        if (days.length < 3) continue; // skip incomplete weeks
+
+        let weeklyHigh = -Infinity, weeklyLow = Infinity;
+        for (const d of days) {
+          if (d.high > weeklyHigh) weeklyHigh = d.high;
+          if (d.low < weeklyLow) weeklyLow = d.low;
+        }
+
+        // Find which day first reached each extreme
+        let firstHighDay = null, firstLowDay = null;
+        for (const d of days) {
+          if (!firstHighDay && d.high >= weeklyHigh) firstHighDay = d;
+          if (!firstLowDay && d.low <= weeklyLow) firstLowDay = d;
+          if (firstHighDay && firstLowDay) break;
+        }
+
+        let highCameFirst;
+        if (firstHighDay.date === firstLowDay.date) {
+          // Same day — use the daily pivot logic (which came first within that day)
+          highCameFirst = firstHighDay.highHour <= firstHighDay.lowHour;
+          if (firstHighDay.highHour === firstHighDay.lowHour) {
+            highCameFirst = firstHighDay.p1.type === 'high';
+          }
+        } else {
+          highCameFirst = firstHighDay.date < firstLowDay.date;
+        }
+
+        const weekOpen = days[0].dayOpen;
+        const p1 = highCameFirst
+          ? { price: weeklyHigh, day: firstHighDay.dayOfWeek, date: firstHighDay.date, type: 'high' }
+          : { price: weeklyLow, day: firstLowDay.dayOfWeek, date: firstLowDay.date, type: 'low' };
+        const p2 = highCameFirst
+          ? { price: weeklyLow, day: firstLowDay.dayOfWeek, date: firstLowDay.date, type: 'low' }
+          : { price: weeklyHigh, day: firstHighDay.dayOfWeek, date: firstHighDay.date, type: 'high' };
+
+        const openToP1 = Math.abs(p1.price - weekOpen) / weekOpen * 100;
+        const p1ToP2Val = Math.abs(p2.price - p1.price) / p1.price * 100;
+
+        result.push({
+          weekStart, days: days.length,
+          high: weeklyHigh, low: weeklyLow, weekOpen,
+          p1, p2, openToP1, p1ToP2: p1ToP2Val,
+          range: (weeklyHigh - weeklyLow) / weeklyLow * 100,
+        });
+      }
+
+      return result.sort((a, b) => a.weekStart.localeCompare(b.weekStart));
+    }
+
+    // ── Enhanced Hourly Stats ──
     function calculateHourlyStats(pivots) {
       const p1Counts = new Array(24).fill(0);
       const p2Counts = new Array(24).fill(0);
       const total = pivots.length || 1;
 
+      // Track last occurrence dates
+      const p1LastDates = Array.from({length: 24}, () => []);
+      const p2LastDates = Array.from({length: 24}, () => []);
+
       for (const p of pivots) {
         p1Counts[p.p1.hour]++;
         p2Counts[p.p2.hour]++;
+        p1LastDates[p.p1.hour].push(p.date);
+        p2LastDates[p.p2.hour].push(p.date);
       }
 
+      const todayStr = new Date().toISOString().slice(0, 10);
+      const todayMs = new Date(todayStr).getTime();
+
+      const lastP1DaysAgo = p1LastDates.map(dates => {
+        if (!dates.length) return null;
+        const last = dates[dates.length - 1];
+        return Math.round((todayMs - new Date(last).getTime()) / 86400000);
+      });
+      const lastP2DaysAgo = p2LastDates.map(dates => {
+        if (!dates.length) return null;
+        const last = dates[dates.length - 1];
+        return Math.round((todayMs - new Date(last).getTime()) / 86400000);
+      });
+
       return {
-        p1: p1Counts.map(c => (c / total * 100)),
-        p2: p2Counts.map(c => (c / total * 100)),
+        p1: p1Counts.map(c => c / total * 100),
+        p2: p2Counts.map(c => c / total * 100),
         p1Raw: p1Counts,
         p2Raw: p2Counts,
+        lastP1DaysAgo,
+        lastP2DaysAgo,
+        p1LastDates,
+        p2LastDates,
       };
     }
 
-    // ── Day of Week Stats ──
-    function calculateDayStats(pivots) {
-      const counts = new Array(7).fill(0);
-      const highFirst = new Array(7).fill(0);
-      const total = new Array(7).fill(0);
+    // ── Day of Week Stats (for weekly pivots) ──
+    function calculateWeeklyDayStats(wPivots) {
+      const p1Counts = new Array(7).fill(0);
+      const p2Counts = new Array(7).fill(0);
+      const total = wPivots.length || 1;
+      const p1LastDates = Array.from({length: 7}, () => []);
+      const p2LastDates = Array.from({length: 7}, () => []);
 
-      for (const p of pivots) {
-        total[p.dayOfWeek]++;
-        if (p.p1.type === 'high') highFirst[p.dayOfWeek]++;
+      for (const w of wPivots) {
+        p1Counts[w.p1.day]++;
+        p2Counts[w.p2.day]++;
+        p1LastDates[w.p1.day].push(w.p1.date);
+        p2LastDates[w.p2.day].push(w.p2.date);
       }
 
-      return { total, highFirst };
+      const todayStr = new Date().toISOString().slice(0, 10);
+      const todayMs = new Date(todayStr).getTime();
+
+      return {
+        p1: p1Counts.map(c => c / total * 100),
+        p2: p2Counts.map(c => c / total * 100),
+        p1Raw: p1Counts,
+        p2Raw: p2Counts,
+        lastP1DaysAgo: p1LastDates.map(dates => {
+          if (!dates.length) return null;
+          return Math.round((todayMs - new Date(dates[dates.length - 1]).getTime()) / 86400000);
+        }),
+        lastP2DaysAgo: p2LastDates.map(dates => {
+          if (!dates.length) return null;
+          return Math.round((todayMs - new Date(dates[dates.length - 1]).getTime()) / 86400000);
+        }),
+        p1LastDates,
+        p2LastDates,
+      };
     }
 
     // ── Distance Stats ──
@@ -570,260 +697,617 @@
     }
 
     function buildHistogram(values, bins = 34) {
-      if (!values.length) return { bins: [], min: 0, max: 0 };
+      if (!values.length) return { bins: [], min: 0, max: 0, step: 0, indices: [] };
       const min = Math.min(...values);
       const max = Math.max(...values);
       const step = (max - min) / bins || 1;
       const histogram = new Array(bins).fill(0);
+      const indices = Array.from({length: bins}, () => []);
 
-      for (const v of values) {
+      for (let vi = 0; vi < values.length; vi++) {
+        const v = values[vi];
         const i = Math.min(Math.floor((v - min) / step), bins - 1);
         histogram[i]++;
+        indices[i].push(vi);
       }
 
-      return { bins: histogram, min, max, step };
+      return { bins: histogram, min, max, step, indices };
     }
 
-    // ── Insights ──
-    function generateInsights(pivots, hourlyStats) {
-      const insights = [];
-      if (!pivots.length) return insights;
+    // ── Popover ──
+    function showPopover(e, dates, label) {
+      closePopover();
+      const pop = document.createElement('div');
+      pop.className = 'popover';
+      const last10 = dates.slice(-10).reverse();
+      pop.innerHTML = `<h4>Last ${last10.length} — ${label}</h4><ul>${last10.map(d => `<li>${d}</li>`).join('')}</ul>`;
 
-      const today = new Date();
-      const todayDow = today.getUTCDay();
-      const currentHour = today.getUTCHours();
+      document.body.appendChild(pop);
+      const rect = e.target.getBoundingClientRect();
+      let left = rect.right + 8;
+      let top = rect.top;
+      if (left + 200 > window.innerWidth) left = rect.left - 200;
+      if (top + 200 > window.innerHeight) top = window.innerHeight - 210;
+      pop.style.left = left + 'px';
+      pop.style.top = top + 'px';
+      activePopover = pop;
+    }
 
-      // High-first vs Low-first ratio
+    function closePopover() {
+      if (activePopover) { activePopover.remove(); activePopover = null; }
+    }
+
+    document.addEventListener('click', (e) => {
+      if (activePopover && !activePopover.contains(e.target) && !e.target.classList.contains('last-cell')) {
+        closePopover();
+      }
+    });
+
+    // ── Modal ──
+    function showModal(title, pivots) {
+      const overlay = document.createElement('div');
+      overlay.className = 'modal-overlay';
+      overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
+
+      const rows = pivots.map(p => `<tr>
+        <td style="color:#aaa">${p.date}</td>
+        <td style="color:#666">${DAYS[p.dayOfWeek]}</td>
+        <td>${p.dayOpen.toFixed(2)}</td>
+        <td class="${p.p1.type === 'high' ? 'p1-high' : 'p1-low'}">${p.p1.type.toUpperCase()} ${p.p1.hour}:00</td>
+        <td class="${p.p2.type === 'high' ? 'p1-high' : 'p1-low'}">${p.p2.type.toUpperCase()} ${p.p2.hour}:00</td>
+        <td>${p.openToP1.toFixed(2)}%</td>
+        <td>${p.p1ToP2.toFixed(2)}%</td>
+      </tr>`).join('');
+
+      overlay.innerHTML = `<div class="modal">
+        <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">&times;</button>
+        <h3>${title} (${pivots.length} days)</h3>
+        <table><thead><tr><th>Date</th><th>Day</th><th>Open</th><th>P1</th><th>P2</th><th>O→P1</th><th>P1→P2</th></tr></thead>
+        <tbody>${rows}</tbody></table>
+      </div>`;
+
+      document.body.appendChild(overlay);
+    }
+
+    // ── Generate Insights ──
+    function generateInsights(pivots) {
+      if (!pivots.length) return {};
+
+      const today = pivots[pivots.length - 1];
+      const currentHour = new Date().getUTCHours();
+      const hourlyStats = calculateHourlyStats(pivots);
+
       const highFirstCount = pivots.filter(p => p.p1.type === 'high').length;
-      const highFirstPct = (highFirstCount / pivots.length * 100).toFixed(0);
-      const lowFirstPct = (100 - highFirstPct).toFixed(0);
+      const highFirstPct = highFirstCount / pivots.length * 100;
 
-      if (highFirstPct > 60) {
-        insights.push({ color: 'red', text: `Price tends to reach the HIGH first ${highFirstPct}% of the time — watch for early fakeout longs.` });
-      } else if (lowFirstPct > 60) {
-        insights.push({ color: 'green', text: `Price tends to reach the LOW first ${lowFirstPct}% of the time — early dips may be buying opportunities.` });
-      } else {
-        insights.push({ color: 'yellow', text: `Balanced market — high-first ${highFirstPct}% vs low-first ${lowFirstPct}%. No strong directional bias in pivot formation.` });
+      // Flip risk: how many days had P1 exceeded by later price action
+      // (days where P1 direction was same as today but price went further)
+      let flipRiskPct = 0;
+      if (today) {
+        const todayP1Level = today.p1.price;
+        const todayP1Type = today.p1.type;
+        const similar = pivots.slice(0, -1).filter(p => p.p1.type === todayP1Type);
+        if (similar.length) {
+          const exceeded = similar.filter(p => {
+            if (todayP1Type === 'high') return p.low < todayP1Level && p.p2.price < todayP1Level;
+            return p.high > todayP1Level && p.p2.price > todayP1Level;
+          });
+          // Simplified: what % of days with same P1 type had more displacement after P1 hour
+          const afterP1 = pivots.slice(0, -1).filter(p => {
+            if (todayP1Type === 'high') return p.high > todayP1Level;
+            return p.low < todayP1Level;
+          });
+          flipRiskPct = afterP1.length / pivots.length * 100;
+        }
       }
 
-      // Peak P1 hour
-      const peakP1Hour = hourlyStats.p1.indexOf(Math.max(...hourlyStats.p1));
-      const peakP1Pct = hourlyStats.p1[peakP1Hour].toFixed(0);
-      const peakSession = getSession(peakP1Hour);
-      insights.push({
-        color: 'yellow',
-        text: `P1 (first pivot) forms most frequently at ${peakP1Hour}:00 UTC (${peakSession} session) — ${peakP1Pct}% of days.`
-      });
+      // P2 completion: % of days with more displacement than current P1→P2
+      const todayP1ToP2 = today ? today.p1ToP2 : 0;
+      const moreDisplacement = pivots.slice(0, -1).filter(p => p.p1ToP2 > todayP1ToP2).length;
+      const p2CompletionPct = pivots.length > 1 ? moreDisplacement / (pivots.length - 1) * 100 : 0;
 
-      // Peak P2 hour
-      const peakP2Hour = hourlyStats.p2.indexOf(Math.max(...hourlyStats.p2));
-      const peakP2Pct = hourlyStats.p2[peakP2Hour].toFixed(0);
-      const peakP2Session = getSession(peakP2Hour);
-      insights.push({
-        color: 'yellow',
-        text: `P2 (second pivot) forms most frequently at ${peakP2Hour}:00 UTC (${peakP2Session} session) — ${peakP2Pct}% of days.`
-      });
+      // P1 formed by now
+      const p1BeforeNow = hourlyStats.p1.slice(0, currentHour + 1).reduce((a, b) => a + b, 0);
 
-      // Average range
-      const avgRange = pivots.reduce((s, p) => s + p.range, 0) / pivots.length;
-      insights.push({
-        color: avgRange > 5 ? 'red' : avgRange > 2.5 ? 'yellow' : 'green',
-        text: `Average daily range: ${avgRange.toFixed(2)}%. ${avgRange > 5 ? 'High volatility environment.' : avgRange > 2.5 ? 'Moderate volatility.' : 'Low volatility — tight ranges.'}`
-      });
-
-      // Current time context
-      const p1Before = hourlyStats.p1.slice(0, currentHour + 1).reduce((a, b) => a + b, 0);
-      if (currentHour < 20) {
-        insights.push({
-          color: p1Before > 70 ? 'green' : p1Before > 40 ? 'yellow' : 'red',
-          text: `By ${currentHour}:00 UTC, P1 has typically formed ${p1Before.toFixed(0)}% of the time. ${p1Before > 70 ? "Today's first extreme is likely already in." : "First pivot may still be forming."}`
-        });
-      }
-
-      // Open → P1 distance
+      // Average distances
       const openToP1Stats = distanceStats(pivots.map(p => p.openToP1));
-      insights.push({
-        color: 'green',
-        text: `Avg distance from Open to P1: ${openToP1Stats.mean.toFixed(2)}% (median: ${openToP1Stats.median.toFixed(2)}%). This is the typical first move to fade or chase.`
-      });
+      const p1ToP2Stats = distanceStats(pivots.map(p => p.p1ToP2));
+      const avgRange = pivots.reduce((s, p) => s + p.range, 0) / pivots.length;
 
-      return insights;
+      return {
+        today, highFirstPct, flipRiskPct, p2CompletionPct,
+        p1BeforeNow, openToP1Stats, p1ToP2Stats, avgRange,
+        currentHour, totalDays: pivots.length,
+      };
     }
 
-    // ── Render Functions ──
-    function heatColor(pct, max) {
-      if (max === 0) return '#252525';
-      const intensity = pct / max;
-      if (intensity < 0.2) return '#252525';
-      if (intensity < 0.4) return 'rgba(50,214,149,0.2)';
-      if (intensity < 0.6) return 'rgba(50,214,149,0.4)';
-      if (intensity < 0.8) return 'rgba(50,214,149,0.6)';
-      return 'rgba(50,214,149,0.85)';
-    }
-
-    function renderAll() {
+    // ── Render: TIME > Daily ──
+    function renderTimeDaily() {
       const pivots = filteredPivots;
-      if (!pivots.length) {
-        document.getElementById('content').innerHTML = '<div style="text-align:center;padding:40px;color:#666;">No data for selected filters.</div>';
-        return;
-      }
+      if (!pivots.length) return noData();
 
       const hourlyStats = calculateHourlyStats(pivots);
-      const dayStats = calculateDayStats(pivots);
-      const openToP1Vals = pivots.map(p => p.openToP1);
-      const p1ToP2Vals = pivots.map(p => p.p1ToP2);
+      const insights = generateInsights(pivots);
+      const maxP1 = Math.max(...hourlyStats.p1);
+      const maxP2 = Math.max(...hourlyStats.p2);
+      const currentHour = new Date().getUTCHours();
+
+      let tableRows = '';
+      for (let h = 0; h < 24; h++) {
+        const isCurrent = h === currentHour;
+        const sessClass = getSessionClass(h);
+        const p1Pct = hourlyStats.p1[h];
+        const p2Pct = hourlyStats.p2[h];
+        const p1Last = hourlyStats.lastP1DaysAgo[h];
+        const p2Last = hourlyStats.lastP2DaysAgo[h];
+        const p1Width = maxP1 > 0 ? (p1Pct / maxP1 * 60) : 0;
+        const p2Width = maxP2 > 0 ? (p2Pct / maxP2 * 60) : 0;
+
+        tableRows += `<tr class="${sessClass}${isCurrent ? ' current-hour' : ''}">
+          <td style="color:#aaa">${String(h).padStart(2,'0')}:00</td>
+          <td><span class="pct-bar" style="width:${p1Width}px;background:${schemeColor(p1Pct, maxP1)}"></span>${p1Pct.toFixed(1)}%</td>
+          <td class="last-cell" data-type="p1" data-hour="${h}">${p1Last !== null ? p1Last + 'd' : '—'}</td>
+          <td><span class="pct-bar" style="width:${p2Width}px;background:${schemeColor(p2Pct, maxP2)}"></span>${p2Pct.toFixed(1)}%</td>
+          <td class="last-cell" data-type="p2" data-hour="${h}">${p2Last !== null ? p2Last + 'd' : '—'}</td>
+        </tr>`;
+      }
+
+      const flipColor = insights.flipRiskPct > 40 ? 'red' : insights.flipRiskPct > 20 ? 'yellow' : 'green';
+      const p2Color = insights.p2CompletionPct > 50 ? 'red' : insights.p2CompletionPct > 20 ? 'yellow' : 'green';
+      const indClass = c => c === 'red' ? 'ind-red' : c === 'yellow' ? 'ind-yellow' : 'ind-green';
+
+      let html = `<div class="sub-tabs" id="sub-tabs">
+        <button class="active" data-sub="daily">Daily</button>
+        <button data-sub="weekly">Weekly</button>
+      </div>
+      <div class="split-60-40">
+        <div class="card">
+          <h2>Hourly P1/P2 Probability</h2>
+          <div class="table-scroll">
+            <table class="prob-table" id="prob-table">
+              <thead><tr><th>Hour</th><th>P1%</th><th>Last</th><th>P2%</th><th>Last</th></tr></thead>
+              <tbody>${tableRows}</tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card">
+          <h2>Key Insights</h2>
+          <div class="insight-section">
+            <h3>Current State</h3>
+            <div class="insight-row"><span class="insight-label">Data Points</span><span class="insight-val">${insights.totalDays} days</span></div>
+            <div class="insight-row"><span class="insight-label">Asset</span><span class="insight-val">${document.getElementById('symbol-select').value.toUpperCase()}</span></div>
+            ${insights.today ? `
+            <div class="insight-row"><span class="insight-label">Current P1</span><span class="insight-val ${insights.today.p1.type === 'high' ? 'p1-high' : 'p1-low'}">${insights.today.p1.type.toUpperCase()} @ ${insights.today.p1.hour}:00 — ${insights.today.p1.price.toFixed(2)}</span></div>
+            <div class="insight-row"><span class="insight-label">Current P2</span><span class="insight-val ${insights.today.p2.type === 'high' ? 'p1-high' : 'p1-low'}">${insights.today.p2.type.toUpperCase()} @ ${insights.today.p2.hour}:00 — ${insights.today.p2.price.toFixed(2)}</span></div>
+            ` : ''}
+          </div>
+          <div class="insight-section">
+            <h3>P1 Status</h3>
+            <div class="insight-row"><span class="insight-label">P1 formed by now</span><span class="insight-val">${insights.p1BeforeNow.toFixed(0)}%</span></div>
+            <div class="insight-row"><span class="insight-label">High-first bias</span><span class="insight-val">${insights.highFirstPct.toFixed(0)}%</span></div>
+          </div>
+          <div class="insight-section">
+            <h3>Distance Summary</h3>
+            <div class="insight-row"><span class="insight-label">Avg Open→P1</span><span class="insight-val">${insights.openToP1Stats.mean.toFixed(2)}%</span></div>
+            <div class="insight-row"><span class="insight-label">Avg P1→P2</span><span class="insight-val">${insights.p1ToP2Stats.mean.toFixed(2)}%</span></div>
+            <div class="insight-row"><span class="insight-label">Avg Range</span><span class="insight-val">${insights.avgRange.toFixed(2)}%</span></div>
+          </div>
+          <div class="insight-section">
+            <h3>Risk Indicators</h3>
+            <div class="insight-row" style="border-left-color:${flipColor === 'red' ? '#FF4C61' : flipColor === 'yellow' ? '#E6A817' : '#32D695'}">
+              <span class="insight-label">Flip Risk</span>
+              <span class="insight-val">${insights.flipRiskPct.toFixed(0)}% <span class="indicator ${indClass(flipColor)}"></span></span>
+            </div>
+            <div class="insight-row" style="border-left-color:${p2Color === 'red' ? '#FF4C61' : p2Color === 'yellow' ? '#E6A817' : '#32D695'}">
+              <span class="insight-label">P2 Completion</span>
+              <span class="insight-val">${insights.p2CompletionPct.toFixed(0)}% more expected <span class="indicator ${indClass(p2Color)}"></span></span>
+            </div>
+          </div>
+        </div>
+      </div>`;
+
+      setContent(html);
+      bindSubTabs();
+      bindLastCells(hourlyStats);
+    }
+
+    // ── Render: TIME > Weekly ──
+    function renderTimeWeekly() {
+      const wPivots = weeklyPivots;
+      if (!wPivots.length) return noData();
+
+      const dayStats = calculateWeeklyDayStats(wPivots);
+      const maxP1 = Math.max(...dayStats.p1);
+      const maxP2 = Math.max(...dayStats.p2);
+      const currentDay = new Date().getUTCDay();
+
+      let tableRows = '';
+      for (let d = 1; d <= 7; d++) {
+        const dow = d % 7; // Mon=1..Sun=0
+        const isCurrent = dow === currentDay;
+        const p1Pct = dayStats.p1[dow];
+        const p2Pct = dayStats.p2[dow];
+        const p1Last = dayStats.lastP1DaysAgo[dow];
+        const p2Last = dayStats.lastP2DaysAgo[dow];
+        const p1Width = maxP1 > 0 ? (p1Pct / maxP1 * 80) : 0;
+        const p2Width = maxP2 > 0 ? (p2Pct / maxP2 * 80) : 0;
+
+        tableRows += `<tr class="${isCurrent ? 'current-hour' : ''}">
+          <td style="color:#aaa">${DAY_NAMES_FULL[dow]}</td>
+          <td><span class="pct-bar" style="width:${p1Width}px;background:${schemeColor(p1Pct, maxP1)}"></span>${p1Pct.toFixed(1)}%</td>
+          <td class="last-cell" data-type="wp1" data-dow="${dow}">${p1Last !== null ? p1Last + 'd' : '—'}</td>
+          <td><span class="pct-bar" style="width:${p2Width}px;background:${schemeColor(p2Pct, maxP2)}"></span>${p2Pct.toFixed(1)}%</td>
+          <td class="last-cell" data-type="wp2" data-dow="${dow}">${p2Last !== null ? p2Last + 'd' : '—'}</td>
+        </tr>`;
+      }
+
+      const insights = generateInsights(filteredPivots);
+
+      let html = `<div class="sub-tabs" id="sub-tabs">
+        <button data-sub="daily">Daily</button>
+        <button class="active" data-sub="weekly">Weekly</button>
+      </div>
+      <div class="split-60-40">
+        <div class="card">
+          <h2>Weekly P1/P2 Day Probability</h2>
+          <table class="prob-table">
+            <thead><tr><th>Day</th><th>P1%</th><th>Last</th><th>P2%</th><th>Last</th></tr></thead>
+            <tbody>${tableRows}</tbody>
+          </table>
+        </div>
+        <div class="card">
+          <h2>Weekly Insights</h2>
+          <div class="insight-section">
+            <h3>Overview</h3>
+            <div class="insight-row"><span class="insight-label">Weeks Analyzed</span><span class="insight-val">${wPivots.length}</span></div>
+            <div class="insight-row"><span class="insight-label">High-first weeks</span><span class="insight-val">${(wPivots.filter(w => w.p1.type === 'high').length / wPivots.length * 100).toFixed(0)}%</span></div>
+            <div class="insight-row"><span class="insight-label">Avg Weekly Range</span><span class="insight-val">${(wPivots.reduce((s,w) => s + w.range, 0) / wPivots.length).toFixed(2)}%</span></div>
+          </div>
+          <div class="insight-section">
+            <h3>Distances</h3>
+            <div class="insight-row"><span class="insight-label">Avg Open→P1</span><span class="insight-val">${distanceStats(wPivots.map(w=>w.openToP1)).mean.toFixed(2)}%</span></div>
+            <div class="insight-row"><span class="insight-label">Avg P1→P2</span><span class="insight-val">${distanceStats(wPivots.map(w=>w.p1ToP2)).mean.toFixed(2)}%</span></div>
+          </div>
+        </div>
+      </div>`;
+
+      setContent(html);
+      bindSubTabs();
+
+      // Bind last cells for weekly
+      const dayStatsRef = dayStats;
+      document.querySelectorAll('.last-cell').forEach(cell => {
+        cell.addEventListener('click', (e) => {
+          const type = cell.dataset.type;
+          const dow = parseInt(cell.dataset.dow);
+          if (type === 'wp1') showPopover(e, dayStatsRef.p1LastDates[dow], `P1 on ${DAYS[dow]}`);
+          else showPopover(e, dayStatsRef.p2LastDates[dow], `P2 on ${DAYS[dow]}`);
+        });
+      });
+    }
+
+    // ── Render: DISTANCE > Daily ──
+    function renderDistanceDaily() {
+      const pivots = filteredPivots;
+      if (!pivots.length) return noData();
+
+      const openToP1Vals = pivots.map(p => p.openToP1Signed);
+      const p1ToP2Vals = pivots.map(p => p.p1ToP2Signed);
       const openToP1Stats_d = distanceStats(openToP1Vals);
       const p1ToP2Stats_d = distanceStats(p1ToP2Vals);
       const openToP1Hist = buildHistogram(openToP1Vals);
       const p1ToP2Hist = buildHistogram(p1ToP2Vals);
-      const insights = generateInsights(pivots, hourlyStats);
 
-      const today = pivots[pivots.length - 1];
+      const insights = generateInsights(pivots);
+      const flipColor = insights.flipRiskPct > 40 ? 'red' : insights.flipRiskPct > 20 ? 'yellow' : 'green';
+      const p2Color = insights.p2CompletionPct > 50 ? 'red' : insights.p2CompletionPct > 20 ? 'yellow' : 'green';
+      const indClass = c => c === 'red' ? 'ind-red' : c === 'yellow' ? 'ind-yellow' : 'ind-green';
+
+      function renderHistBars(hist, color, idPrefix) {
+        const maxCount = Math.max(...hist.bins, 1);
+        return hist.bins.map((count, i) => {
+          const h = count / maxCount * 100;
+          const rangeStart = (hist.min + i * hist.step).toFixed(2);
+          const rangeEnd = (hist.min + (i + 1) * hist.step).toFixed(2);
+          const isNeg = hist.min + (i + 0.5) * hist.step < 0;
+          const barColor = isNeg ? '#FF4C61' : '#32D695';
+          return `<div class="hist-bar" id="${idPrefix}-${i}" style="height:${h}%;background:${barColor}" title="${rangeStart}% to ${rangeEnd}% — ${count} days" data-idx="${i}"></div>`;
+        }).join('');
+      }
+
+      // Zero line position for signed histograms
+      function zeroLinePos(hist) {
+        if (hist.min >= 0 || hist.max <= 0) return null;
+        return ((0 - hist.min) / (hist.max - hist.min) * 100);
+      }
+
+      const zeroP1 = zeroLinePos(openToP1Hist);
+      const zeroP2 = zeroLinePos(p1ToP2Hist);
+
+      let html = `<div class="sub-tabs" id="sub-tabs">
+        <button class="active" data-sub="daily">Daily</button>
+        <button data-sub="weekly">Weekly</button>
+      </div>
+      <div class="split-65-35">
+        <div>
+          <div class="card histogram-container">
+            <h2>Open → P1 Distance (Signed)</h2>
+            <div class="histogram-wrapper">
+              <div class="histogram" id="hist-op1">${renderHistBars(openToP1Hist, '#32D695', 'op1')}</div>
+              ${zeroP1 !== null ? `<div style="position:absolute;bottom:0;left:${zeroP1}%;width:1px;height:120px;border-left:1px dashed #555;pointer-events:none"></div>` : ''}
+            </div>
+            <div class="hist-labels"><span>${openToP1Hist.min.toFixed(2)}%</span><span>0%</span><span>${openToP1Hist.max.toFixed(2)}%</span></div>
+            <div class="hist-stats">
+              <span>Mean: <strong>${openToP1Stats_d.mean.toFixed(2)}%</strong></span>
+              <span>Median: <strong>${openToP1Stats_d.median.toFixed(2)}%</strong></span>
+              <span>σ: <strong>${openToP1Stats_d.stdev.toFixed(2)}%</strong></span>
+            </div>
+          </div>
+          <div class="card histogram-container">
+            <h2>P1 → P2 Distance (Signed)</h2>
+            <div class="histogram-wrapper">
+              <div class="histogram" id="hist-p1p2">${renderHistBars(p1ToP2Hist, '#E6A817', 'p1p2')}</div>
+              ${zeroP2 !== null ? `<div style="position:absolute;bottom:0;left:${zeroP2}%;width:1px;height:120px;border-left:1px dashed #555;pointer-events:none"></div>` : ''}
+            </div>
+            <div class="hist-labels"><span>${p1ToP2Hist.min.toFixed(2)}%</span><span>0%</span><span>${p1ToP2Hist.max.toFixed(2)}%</span></div>
+            <div class="hist-stats">
+              <span>Mean: <strong>${p1ToP2Stats_d.mean.toFixed(2)}%</strong></span>
+              <span>Median: <strong>${p1ToP2Stats_d.median.toFixed(2)}%</strong></span>
+              <span>σ: <strong>${p1ToP2Stats_d.stdev.toFixed(2)}%</strong></span>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <h2>Distance Insights</h2>
+          <div class="insight-section">
+            <h3>Flip Risk</h3>
+            <div class="insight-row" style="border-left-color:${flipColor === 'red' ? '#FF4C61' : flipColor === 'yellow' ? '#E6A817' : '#32D695'}">
+              <span class="insight-label">P1 exceeded</span>
+              <span class="insight-val">${insights.flipRiskPct.toFixed(0)}% <span class="indicator ${indClass(flipColor)}"></span></span>
+            </div>
+            <div style="font-size:11px;color:#666;padding:4px 10px;margin-bottom:8px">
+              ${flipColor === 'red' ? 'High flip risk — P1 level frequently exceeded' : flipColor === 'yellow' ? 'Moderate — monitor for reversal' : 'Low flip risk — P1 likely holds'}
+            </div>
+          </div>
+          <div class="insight-section">
+            <h3>P2 Completion</h3>
+            <div class="insight-row" style="border-left-color:${p2Color === 'red' ? '#FF4C61' : p2Color === 'yellow' ? '#E6A817' : '#32D695'}">
+              <span class="insight-label">More displacement expected</span>
+              <span class="insight-val">${insights.p2CompletionPct.toFixed(0)}% <span class="indicator ${indClass(p2Color)}"></span></span>
+            </div>
+            <div style="font-size:11px;color:#666;padding:4px 10px;margin-bottom:8px">
+              ${p2Color === 'red' ? 'P2 likely not done — most days moved further' : p2Color === 'yellow' ? 'Some room for more P2 extension' : 'P2 likely complete'}
+            </div>
+          </div>
+          <div class="insight-section">
+            <h3>P1 Metrics</h3>
+            <div class="insight-row"><span class="insight-label">P1 formed by now</span><span class="insight-val">${insights.p1BeforeNow.toFixed(0)}%</span></div>
+            <div class="insight-row"><span class="insight-label">Avg Open→P1</span><span class="insight-val">${insights.openToP1Stats.mean.toFixed(2)}%</span></div>
+            <div class="insight-row"><span class="insight-label">Avg P1→P2</span><span class="insight-val">${insights.p1ToP2Stats.mean.toFixed(2)}%</span></div>
+          </div>
+        </div>
+      </div>`;
+
+      setContent(html);
+      bindSubTabs();
+
+      // Bind histogram bar clicks
+      document.querySelectorAll('#hist-op1 .hist-bar').forEach(bar => {
+        bar.addEventListener('click', () => {
+          const idx = parseInt(bar.dataset.idx);
+          const matchingPivots = openToP1Hist.indices[idx].map(i => pivots[i]);
+          const rangeStart = (openToP1Hist.min + idx * openToP1Hist.step).toFixed(2);
+          const rangeEnd = (openToP1Hist.min + (idx + 1) * openToP1Hist.step).toFixed(2);
+          showModal(`Open→P1: ${rangeStart}% to ${rangeEnd}%`, matchingPivots);
+        });
+      });
+
+      document.querySelectorAll('#hist-p1p2 .hist-bar').forEach(bar => {
+        bar.addEventListener('click', () => {
+          const idx = parseInt(bar.dataset.idx);
+          const matchingPivots = p1ToP2Hist.indices[idx].map(i => pivots[i]);
+          const rangeStart = (p1ToP2Hist.min + idx * p1ToP2Hist.step).toFixed(2);
+          const rangeEnd = (p1ToP2Hist.min + (idx + 1) * p1ToP2Hist.step).toFixed(2);
+          showModal(`P1→P2: ${rangeStart}% to ${rangeEnd}%`, matchingPivots);
+        });
+      });
+
+      // Bind insight row clicks to highlight histogram bars
+      document.querySelectorAll('.insight-row').forEach(row => {
+        row.addEventListener('click', () => {
+          // Toggle highlighting
+          const label = row.querySelector('.insight-label')?.textContent;
+          if (!label) return;
+
+          const allBars = document.querySelectorAll('.hist-bar');
+          const isHighlighted = row.classList.contains('highlighted-insight');
+
+          // Reset all
+          allBars.forEach(b => { b.classList.remove('highlighted', 'dimmed'); });
+          document.querySelectorAll('.insight-row').forEach(r => r.classList.remove('highlighted-insight'));
+
+          if (!isHighlighted && label.includes('Open→P1')) {
+            row.classList.add('highlighted-insight');
+            document.querySelectorAll('#hist-op1 .hist-bar').forEach(b => b.classList.add('highlighted'));
+            document.querySelectorAll('#hist-p1p2 .hist-bar').forEach(b => b.classList.add('dimmed'));
+          } else if (!isHighlighted && label.includes('P1→P2')) {
+            row.classList.add('highlighted-insight');
+            document.querySelectorAll('#hist-p1p2 .hist-bar').forEach(b => b.classList.add('highlighted'));
+            document.querySelectorAll('#hist-op1 .hist-bar').forEach(b => b.classList.add('dimmed'));
+          }
+        });
+      });
+    }
+
+    // ── Render: DISTANCE > Weekly ──
+    function renderDistanceWeekly() {
+      const wPivots = weeklyPivots;
+      if (!wPivots.length) return noData();
+
+      const openToP1Vals = wPivots.map(w => w.openToP1);
+      const p1ToP2Vals = wPivots.map(w => w.p1ToP2);
+      const op1Stats = distanceStats(openToP1Vals);
+      const p1p2Stats = distanceStats(p1ToP2Vals);
+      const op1Hist = buildHistogram(openToP1Vals);
+      const p1p2Hist = buildHistogram(p1ToP2Vals);
+
+      function renderBars(hist, color, id) {
+        const mx = Math.max(...hist.bins, 1);
+        return hist.bins.map((c, i) => `<div class="hist-bar" style="height:${c/mx*100}%;background:${color}" title="${(hist.min+i*hist.step).toFixed(2)}%–${(hist.min+(i+1)*hist.step).toFixed(2)}% — ${c} weeks" data-idx="${i}"></div>`).join('');
+      }
+
+      let html = `<div class="sub-tabs" id="sub-tabs">
+        <button data-sub="daily">Daily</button>
+        <button class="active" data-sub="weekly">Weekly</button>
+      </div>
+      <div class="split-65-35">
+        <div>
+          <div class="card histogram-container">
+            <h2>Weekly Open → P1 Distance</h2>
+            <div class="histogram">${renderBars(op1Hist, '#32D695', 'wop1')}</div>
+            <div class="hist-labels"><span>${op1Hist.min.toFixed(2)}%</span><span>${op1Hist.max.toFixed(2)}%</span></div>
+            <div class="hist-stats">
+              <span>Mean: <strong>${op1Stats.mean.toFixed(2)}%</strong></span>
+              <span>Median: <strong>${op1Stats.median.toFixed(2)}%</strong></span>
+              <span>σ: <strong>${op1Stats.stdev.toFixed(2)}%</strong></span>
+            </div>
+          </div>
+          <div class="card histogram-container">
+            <h2>Weekly P1 → P2 Distance</h2>
+            <div class="histogram">${renderBars(p1p2Hist, '#E6A817', 'wp1p2')}</div>
+            <div class="hist-labels"><span>${p1p2Hist.min.toFixed(2)}%</span><span>${p1p2Hist.max.toFixed(2)}%</span></div>
+            <div class="hist-stats">
+              <span>Mean: <strong>${p1p2Stats.mean.toFixed(2)}%</strong></span>
+              <span>Median: <strong>${p1p2Stats.median.toFixed(2)}%</strong></span>
+              <span>σ: <strong>${p1p2Stats.stdev.toFixed(2)}%</strong></span>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <h2>Weekly Distance Insights</h2>
+          <div class="insight-section">
+            <h3>Overview</h3>
+            <div class="insight-row"><span class="insight-label">Weeks</span><span class="insight-val">${wPivots.length}</span></div>
+            <div class="insight-row"><span class="insight-label">Avg Open→P1</span><span class="insight-val">${op1Stats.mean.toFixed(2)}%</span></div>
+            <div class="insight-row"><span class="insight-label">Avg P1→P2</span><span class="insight-val">${p1p2Stats.mean.toFixed(2)}%</span></div>
+            <div class="insight-row"><span class="insight-label">Avg Range</span><span class="insight-val">${(wPivots.reduce((s,w)=>s+w.range,0)/wPivots.length).toFixed(2)}%</span></div>
+          </div>
+        </div>
+      </div>`;
+
+      setContent(html);
+      bindSubTabs();
+    }
+
+    // ── Render: SUMMARY ──
+    function renderSummary() {
+      const pivots = filteredPivots;
+      if (!pivots.length) return noData();
+
+      const insights = generateInsights(pivots);
+      const hourlyStats = calculateHourlyStats(pivots);
+      const peakP1Hour = hourlyStats.p1.indexOf(Math.max(...hourlyStats.p1));
+      const peakP2Hour = hourlyStats.p2.indexOf(Math.max(...hourlyStats.p2));
       const highFirstCount = pivots.filter(p => p.p1.type === 'high').length;
-      const maxP1 = Math.max(...hourlyStats.p1);
-      const maxP2 = Math.max(...hourlyStats.p2);
 
-      let html = '';
+      const flipColor = insights.flipRiskPct > 40 ? 'red' : insights.flipRiskPct > 20 ? 'yellow' : 'green';
+      const p2Color = insights.p2CompletionPct > 50 ? 'red' : insights.p2CompletionPct > 20 ? 'yellow' : 'green';
+      const indClass = c => c === 'red' ? 'ind-red' : c === 'yellow' ? 'ind-yellow' : 'ind-green';
 
-      // ── Today Summary ──
-      html += `<div class="card">
-        <h2>Today's Pivots — ${today.date}</h2>
-        <div class="today-summary">
+      const today = insights.today;
+
+      let html = `<div class="card">
+        <h2>Summary — ${document.getElementById('symbol-select').value.toUpperCase()} on ${document.getElementById('exchange-select').value}</h2>
+        <div class="summary-grid">
           <div class="stat-box">
-            <div class="stat-label">P1 (${today.p1.type})</div>
-            <div class="stat-value ${today.p1.type === 'high' ? 'p1-high' : 'p1-low'}">${today.p1.price.toFixed(2)}</div>
-            <div class="stat-sub">${today.p1.hour}:00 UTC · ${getSession(today.p1.hour)}</div>
+            <div class="stat-label">Days Analyzed</div>
+            <div class="stat-value">${pivots.length}</div>
           </div>
           <div class="stat-box">
-            <div class="stat-label">P2 (${today.p2.type})</div>
-            <div class="stat-value ${today.p2.type === 'high' ? 'p1-high' : 'p1-low'}">${today.p2.price.toFixed(2)}</div>
-            <div class="stat-sub">${today.p2.hour}:00 UTC · ${getSession(today.p2.hour)}</div>
+            <div class="stat-label">Weeks Analyzed</div>
+            <div class="stat-value">${weeklyPivots.length}</div>
           </div>
           <div class="stat-box">
-            <div class="stat-label">Open → P1</div>
-            <div class="stat-value" style="color:#E6A817">${today.openToP1.toFixed(2)}%</div>
-            <div class="stat-sub">avg: ${openToP1Stats_d.mean.toFixed(2)}%</div>
-          </div>
-          <div class="stat-box">
-            <div class="stat-label">P1 → P2</div>
-            <div class="stat-value" style="color:#E6A817">${today.p1ToP2.toFixed(2)}%</div>
-            <div class="stat-sub">avg: ${p1ToP2Stats_d.mean.toFixed(2)}%</div>
-          </div>
-          <div class="stat-box">
-            <div class="stat-label">Daily Range</div>
-            <div class="stat-value">${today.range.toFixed(2)}%</div>
-            <div class="stat-sub">${pivots.length} days analyzed</div>
-          </div>
-          <div class="stat-box">
-            <div class="stat-label">High First</div>
-            <div class="stat-value" style="color:#FF4C61">${(highFirstCount / pivots.length * 100).toFixed(0)}%</div>
+            <div class="stat-label">High-First Bias</div>
+            <div class="stat-value" style="color:#FF4C61">${insights.highFirstPct.toFixed(0)}%</div>
             <div class="stat-sub">${highFirstCount}/${pivots.length} days</div>
           </div>
-        </div>
-      </div>`;
-
-      // ── Hourly Heatmap ──
-      html += `<div class="card">
-        <h2>Pivot Hour Probability</h2>
-        <div class="session-zones">
-          <div class="session-zone" style="background:${SESSION_COLORS.Asia.bg};color:${SESSION_COLORS.Asia.text};flex:6">Asia (00-06)</div>
-          <div class="session-zone" style="background:${SESSION_COLORS.London.bg};color:${SESSION_COLORS.London.text};flex:6">London (06-12)</div>
-          <div class="session-zone" style="background:${SESSION_COLORS['New York'].bg};color:${SESSION_COLORS['New York'].text};flex:8">New York (12-20)</div>
-          <div class="session-zone" style="background:${SESSION_COLORS.Close.bg};color:${SESSION_COLORS.Close.text};flex:4">Close (20-00)</div>
-        </div>
-        <div class="heatmap-section">
-          <div class="heatmap-row-label">P1 (First Pivot)</div>
-          <div class="heatmap-grid">
-            ${hourlyStats.p1.map((pct, h) => `<div class="heatmap-cell" style="background:${heatColor(pct, maxP1)}" title="${h}:00 — ${pct.toFixed(1)}% (${hourlyStats.p1Raw[h]} days)">${pct >= 5 ? pct.toFixed(0) + '%' : ''}</div>`).join('')}
+          <div class="stat-box">
+            <div class="stat-label">Peak P1 Hour</div>
+            <div class="stat-value" style="color:#E6A817">${peakP1Hour}:00</div>
+            <div class="stat-sub">${getSession(peakP1Hour)} — ${hourlyStats.p1[peakP1Hour].toFixed(0)}%</div>
           </div>
-          <div class="heatmap-labels">${Array.from({length:24}, (_,i) => `<span>${i}</span>`).join('')}</div>
-        </div>
-        <div class="heatmap-section">
-          <div class="heatmap-row-label">P2 (Second Pivot)</div>
-          <div class="heatmap-grid">
-            ${hourlyStats.p2.map((pct, h) => `<div class="heatmap-cell" style="background:${heatColor(pct, maxP2)}" title="${h}:00 — ${pct.toFixed(1)}% (${hourlyStats.p2Raw[h]} days)">${pct >= 5 ? pct.toFixed(0) + '%' : ''}</div>`).join('')}
+          <div class="stat-box">
+            <div class="stat-label">Peak P2 Hour</div>
+            <div class="stat-value" style="color:#E6A817">${peakP2Hour}:00</div>
+            <div class="stat-sub">${getSession(peakP2Hour)} — ${hourlyStats.p2[peakP2Hour].toFixed(0)}%</div>
           </div>
-          <div class="heatmap-labels">${Array.from({length:24}, (_,i) => `<span>${i}</span>`).join('')}</div>
+          <div class="stat-box">
+            <div class="stat-label">Avg Range</div>
+            <div class="stat-value">${insights.avgRange.toFixed(2)}%</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Avg Open→P1</div>
+            <div class="stat-value" style="color:#32D695">${insights.openToP1Stats.mean.toFixed(2)}%</div>
+            <div class="stat-sub">σ ${insights.openToP1Stats.stdev.toFixed(2)}%</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Avg P1→P2</div>
+            <div class="stat-value" style="color:#E6A817">${insights.p1ToP2Stats.mean.toFixed(2)}%</div>
+            <div class="stat-sub">σ ${insights.p1ToP2Stats.stdev.toFixed(2)}%</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Flip Risk</div>
+            <div class="stat-value">${insights.flipRiskPct.toFixed(0)}% <span class="indicator ${indClass(flipColor)}"></span></div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">P2 Status</div>
+            <div class="stat-value">${insights.p2CompletionPct.toFixed(0)}% <span class="indicator ${indClass(p2Color)}"></span></div>
+          </div>
         </div>
       </div>`;
 
-      // ── Day of Week ──
-      html += `<div class="card">
-        <h2>Day of Week — High-First Probability</h2>
-        <div class="dow-grid">
-          ${DAYS.map((name, i) => {
-            const t = dayStats.total[i];
-            const hf = dayStats.highFirst[i];
-            const pct = t ? (hf / t * 100) : 0;
-            return `<div class="dow-cell">
-              <div class="dow-name">${name}</div>
-              <div class="dow-bar"><div class="dow-fill" style="height:${pct}%;background:${pct > 50 ? '#FF4C61' : '#32D695'}"></div></div>
-              <div class="dow-pct" style="color:${pct > 50 ? '#FF4C61' : '#32D695'}">${pct.toFixed(0)}%</div>
-              <div style="font-size:10px;color:#555;">${t} days</div>
-            </div>`;
-          }).join('')}
-        </div>
-      </div>`;
+      // Current day
+      if (today) {
+        html += `<div class="card">
+          <h2>Latest Day — ${today.date}</h2>
+          <div class="summary-grid">
+            <div class="stat-box">
+              <div class="stat-label">P1 (${today.p1.type})</div>
+              <div class="stat-value ${today.p1.type === 'high' ? 'p1-high' : 'p1-low'}">${today.p1.price.toFixed(2)}</div>
+              <div class="stat-sub">${today.p1.hour}:00 UTC · ${getSession(today.p1.hour)}</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-label">P2 (${today.p2.type})</div>
+              <div class="stat-value ${today.p2.type === 'high' ? 'p1-high' : 'p1-low'}">${today.p2.price.toFixed(2)}</div>
+              <div class="stat-sub">${today.p2.hour}:00 UTC · ${getSession(today.p2.hour)}</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-label">Open→P1</div>
+              <div class="stat-value" style="color:#E6A817">${today.openToP1.toFixed(2)}%</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-label">P1→P2</div>
+              <div class="stat-value" style="color:#E6A817">${today.p1ToP2.toFixed(2)}%</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-label">Range</div>
+              <div class="stat-value">${today.range.toFixed(2)}%</div>
+            </div>
+          </div>
+        </div>`;
+      }
 
-      // ── Distance Histograms ──
-      html += `<div class="two-col">`;
-
-      // Open → P1
-      const maxOp1 = Math.max(...openToP1Hist.bins, 1);
-      html += `<div class="card">
-        <h2>Open → P1 Distance</h2>
-        <div class="histogram">
-          ${openToP1Hist.bins.map((count, i) => {
-            const h = (count / maxOp1 * 100);
-            return `<div class="hist-bar" style="height:${h}%;background:#32D695" title="${(openToP1Hist.min + i * openToP1Hist.step).toFixed(2)}% — ${count} days"></div>`;
-          }).join('')}
-        </div>
-        <div class="hist-labels"><span>${openToP1Hist.min.toFixed(2)}%</span><span>${openToP1Hist.max.toFixed(2)}%</span></div>
-        <div class="hist-stats">
-          <span>Mean: <strong>${openToP1Stats_d.mean.toFixed(2)}%</strong></span>
-          <span>Median: <strong>${openToP1Stats_d.median.toFixed(2)}%</strong></span>
-          <span>σ: <strong>${openToP1Stats_d.stdev.toFixed(2)}%</strong></span>
-        </div>
-      </div>`;
-
-      // P1 → P2
-      const maxP1p2 = Math.max(...p1ToP2Hist.bins, 1);
-      html += `<div class="card">
-        <h2>P1 → P2 Distance</h2>
-        <div class="histogram">
-          ${p1ToP2Hist.bins.map((count, i) => {
-            const h = (count / maxP1p2 * 100);
-            return `<div class="hist-bar" style="height:${h}%;background:#E6A817" title="${(p1ToP2Hist.min + i * p1ToP2Hist.step).toFixed(2)}% — ${count} days"></div>`;
-          }).join('')}
-        </div>
-        <div class="hist-labels"><span>${p1ToP2Hist.min.toFixed(2)}%</span><span>${p1ToP2Hist.max.toFixed(2)}%</span></div>
-        <div class="hist-stats">
-          <span>Mean: <strong>${p1ToP2Stats_d.mean.toFixed(2)}%</strong></span>
-          <span>Median: <strong>${p1ToP2Stats_d.median.toFixed(2)}%</strong></span>
-          <span>σ: <strong>${p1ToP2Stats_d.stdev.toFixed(2)}%</strong></span>
-        </div>
-      </div>`;
-
-      html += `</div>`;
-
-      // ── Insights ──
-      html += `<div class="card">
-        <h2>Insights</h2>
-        <div class="insights-list">
-          ${insights.map(i => `<div class="insight ${i.color}"><span class="dot"></span><span class="insight-text">${i.text}</span></div>`).join('')}
-        </div>
-      </div>`;
-
-      // ── Daily Pivot Table ──
+      // Daily pivot log
       html += `<div class="card">
         <h2>Daily Pivot Log (${pivots.length} days)</h2>
         <div class="table-scroll">
-          <table class="pivot-table-data">
+          <table class="prob-table">
             <thead><tr>
               <th>Date</th><th>Day</th><th>Open</th>
-              <th>P1</th><th>P1 Hour</th><th>P1 Type</th>
-              <th>P2</th><th>P2 Hour</th>
-              <th>Open→P1</th><th>P1→P2</th><th>Range</th>
+              <th>P1</th><th>P1 Hr</th><th>Type</th>
+              <th>P2</th><th>P2 Hr</th>
+              <th>O→P1</th><th>P1→P2</th><th>Range</th>
             </tr></thead>
             <tbody>
               ${[...pivots].reverse().map(p => `<tr>
@@ -844,7 +1328,50 @@
         </div>
       </div>`;
 
+      setContent(html);
+    }
+
+    // ── Helpers ──
+    function noData() {
+      document.getElementById('content').innerHTML = '<div style="text-align:center;padding:40px;color:#666;">No data for selected filters.</div>';
+    }
+
+    function setContent(html) {
       document.getElementById('content').innerHTML = html;
+    }
+
+    function bindSubTabs() {
+      const subTabs = document.getElementById('sub-tabs');
+      if (!subTabs) return;
+      subTabs.addEventListener('click', (e) => {
+        if (e.target.tagName !== 'BUTTON') return;
+        activeSubTab = e.target.dataset.sub;
+        renderActive();
+      });
+    }
+
+    function bindLastCells(hourlyStats) {
+      document.querySelectorAll('.last-cell').forEach(cell => {
+        cell.addEventListener('click', (e) => {
+          const type = cell.dataset.type;
+          const hour = parseInt(cell.dataset.hour);
+          if (type === 'p1') showPopover(e, hourlyStats.p1LastDates[hour], `P1 at ${hour}:00`);
+          else if (type === 'p2') showPopover(e, hourlyStats.p2LastDates[hour], `P2 at ${hour}:00`);
+        });
+      });
+    }
+
+    function renderActive() {
+      closePopover();
+      if (activeTab === 'time') {
+        if (activeSubTab === 'weekly') renderTimeWeekly();
+        else renderTimeDaily();
+      } else if (activeTab === 'distance') {
+        if (activeSubTab === 'weekly') renderDistanceWeekly();
+        else renderDistanceDaily();
+      } else {
+        renderSummary();
+      }
     }
 
     // ── Load ──
@@ -859,6 +1386,7 @@
       try {
         hourlyCandles = await fetchCandles(exchange, symbol, days);
         allPivots = calculateDailyPivots(hourlyCandles);
+        weeklyPivots = calculateWeeklyPivots(allPivots);
         applyFilter();
       } catch (err) {
         content.innerHTML = `<div style="text-align:center;padding:40px;color:#FF4C61;">Error: ${err.message}</div>`;
@@ -873,13 +1401,18 @@
         const day = parseInt(weekdayFilter);
         filteredPivots = allPivots.filter(p => p.dayOfWeek === day);
       }
-      renderAll();
+      weeklyPivots = calculateWeeklyPivots(filteredPivots);
+      renderActive();
     }
 
     // ── Events ──
     document.getElementById('symbol-select').addEventListener('change', loadData);
     document.getElementById('exchange-select').addEventListener('change', loadData);
     document.getElementById('days-select').addEventListener('change', loadData);
+    document.getElementById('scheme-select').addEventListener('change', (e) => {
+      colorScheme = e.target.value;
+      renderActive();
+    });
 
     document.getElementById('weekday-filter').addEventListener('click', (e) => {
       if (e.target.tagName !== 'BUTTON') return;
@@ -888,6 +1421,27 @@
       weekdayFilter = e.target.dataset.day;
       applyFilter();
     });
+
+    document.getElementById('main-tabs').addEventListener('click', (e) => {
+      if (e.target.tagName !== 'BUTTON') return;
+      document.querySelectorAll('#main-tabs button').forEach(b => b.classList.remove('active'));
+      e.target.classList.add('active');
+      activeTab = e.target.dataset.tab;
+      activeSubTab = 'daily'; // reset sub-tab
+      renderActive();
+    });
+
+    // ── Current hour highlighting refresh ──
+    setInterval(() => {
+      const row = document.querySelector('.current-hour');
+      if (row) {
+        const currentHour = new Date().getUTCHours();
+        const hourCell = row.querySelector('td');
+        if (hourCell && !hourCell.textContent.startsWith(String(currentHour).padStart(2, '0'))) {
+          renderActive();
+        }
+      }
+    }, 60000);
 
     // ── Init ──
     loadData();
