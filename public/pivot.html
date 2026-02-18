@@ -826,7 +826,12 @@
     function generateInsights(pivots) {
       if (!pivots.length) return {};
 
-      const today = pivots[pivots.length - 1];
+      // Use the last COMPLETED day for insights, not today's incomplete data
+      const todayStr = new Date().toISOString().slice(0, 10);
+      const lastPivot = pivots[pivots.length - 1];
+      const isToday = lastPivot.date === todayStr;
+      const today = isToday && pivots.length > 1 ? pivots[pivots.length - 2] : lastPivot;
+      const todayInProgress = isToday ? lastPivot : null;
       const currentHour = new Date().getUTCHours();
       const hourlyStats = calculateHourlyStats(pivots);
 
@@ -894,8 +899,14 @@
       const maxP2 = Math.max(...hourlyStats.p2);
       const currentHour = new Date().getUTCHours();
 
-      // Today's pivot hours for checkmarks
-      const today = insights.today;
+      // Use last completed day for stats, show in-progress for today
+      const todayStr = new Date().toISOString().slice(0, 10);
+      const lastPivot = pivots[pivots.length - 1];
+      const isToday = lastPivot.date === todayStr;
+      const today = insights.today; // last completed day
+      const inProgress = isToday ? lastPivot : null; // today's partial data
+
+      // Checkmarks: use completed day's pivots
       const todayP1Hour = today ? today.p1.hour : -1;
       const todayP2Hour = today ? today.p2.hour : -1;
 
@@ -970,9 +981,15 @@
             <div><strong>${insights.totalDays}</strong> data points used - stats are reliable</div>
 
             <span class="section-title">Asset: ${document.getElementById('symbol-select').value.toUpperCase()}</span>
+            ${inProgress ? `
+            <div class="indent" style="color:#E6A817">Today (in progress):</div>
+            <div class="indent">  P1 so far: Daily ${inProgress.p1.type} (${String(inProgress.p1.hour).padStart(2,'0')}:00)</div>
+            <div class="indent">  P2 so far: Daily ${inProgress.p2.type} (${String(inProgress.p2.hour).padStart(2,'0')}:00)</div>
+            ` : ''}
             ${today ? `
-            <div class="indent">Current P1: Daily ${today.p1.type} (${String(today.p1.hour).padStart(2,'0')}:00)</div>
-            <div class="indent">Current P2: Daily ${today.p2.type} (${String(today.p2.hour).padStart(2,'0')}:00)</div>
+            <div class="indent">Last completed day (${today.date}):</div>
+            <div class="indent">  P1: Daily ${today.p1.type} (${String(today.p1.hour).padStart(2,'0')}:00)</div>
+            <div class="indent">  P2: Daily ${today.p2.type} (${String(today.p2.hour).padStart(2,'0')}:00)</div>
             ` : ''}
 
             <span class="section-title">P1 Status</span>
