@@ -1,0 +1,117 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: #161616;
+  color: #e0e0e0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  overflow: hidden;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Navigation ── */
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  background: #111;
+  border-bottom: 1px solid #2a2a2a;
+  padding: 0 12px;
+  height: 40px;
+  flex-shrink: 0;
+}
+
+.nav .logo {
+  font-size: 14px;
+  font-weight: 700;
+  color: #32D695;
+  margin-right: 16px;
+  letter-spacing: 0.5px;
+}
+
+.nav a {
+  color: #666;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 10px 14px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.nav a:hover {
+  color: #aaa;
+}
+
+.nav a.active {
+  color: #e0e0e0;
+  border-bottom-color: #32D695;
+}
+
+/* ── Toolbar ── */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: #1e1e1e;
+  border-bottom: 1px solid #2a2a2a;
+  flex-wrap: wrap;
+  z-index: 10;
+  flex-shrink: 0;
+}
+
+.toolbar select, .toolbar button, .toolbar input {
+  background: #2a2a2a;
+  color: #e0e0e0;
+  border: 1px solid #3a3a3a;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.toolbar select:hover, .toolbar button:hover {
+  border-color: #555;
+}
+
+.toolbar button.active {
+  background: #32D695;
+  color: #161616;
+  border-color: #32D695;
+  font-weight: 600;
+}
+
+.toolbar .label {
+  font-size: 12px;
+  color: #888;
+  margin-right: 2px;
+}
+
+/* ── Chart container ── */
+#chart-container {
+  flex: 1;
+  position: relative;
+}
+
+.loading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #666;
+  font-size: 14px;
+}
+
+/* ── Mobile ── */
+@media (max-width: 600px) {
+  .nav { padding: 0 8px; }
+  .nav .logo { margin-right: 8px; font-size: 13px; }
+  .nav a { padding: 10px 10px; font-size: 12px; }
+  .toolbar { padding: 6px 8px; gap: 6px; }
+  .toolbar select, .toolbar button, .toolbar input { padding: 5px 8px; font-size: 12px; }
+}

@@ -5,123 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Session Candles</title>
   <script src="https://unpkg.com/lightweight-charts@4/dist/lightweight-charts.standalone.production.js"></script>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      background: #161616;
-      color: #e0e0e0;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      overflow: hidden;
-      height: 100dvh;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .toolbar {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 12px;
-      background: #1e1e1e;
-      border-bottom: 1px solid #2a2a2a;
-      flex-wrap: wrap;
-      z-index: 10;
-    }
-
-    .toolbar select, .toolbar button {
-      background: #2a2a2a;
-      color: #e0e0e0;
-      border: 1px solid #3a3a3a;
-      padding: 6px 12px;
-      border-radius: 4px;
-      font-size: 13px;
-      cursor: pointer;
-    }
-
-    .toolbar select:hover, .toolbar button:hover {
-      border-color: #555;
-    }
-
-    .toolbar button.active {
-      background: #32D695;
-      color: #161616;
-      border-color: #32D695;
-      font-weight: 600;
-    }
-
-    .toolbar .label {
-      font-size: 12px;
-      color: #888;
-      margin-right: 2px;
-    }
-
-    .session-legend {
-      display: flex;
-      gap: 12px;
-      margin-left: auto;
-      font-size: 12px;
-    }
-
-    .session-legend span {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .session-legend .dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      display: inline-block;
-    }
-
-    #chart-container {
-      flex: 1;
-      position: relative;
-    }
-
-    .info-tooltip {
-      position: absolute;
-      top: 8px;
-      left: 12px;
-      z-index: 5;
-      font-size: 12px;
-      color: #888;
-      pointer-events: none;
-    }
-
-    .info-tooltip .price {
-      font-size: 18px;
-      font-weight: 600;
-      color: #e0e0e0;
-    }
-
-    .info-tooltip .session-tag {
-      display: inline-block;
-      padding: 2px 6px;
-      border-radius: 3px;
-      font-size: 11px;
-      font-weight: 600;
-      margin-left: 6px;
-    }
-
-    .loading {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      color: #666;
-      font-size: 14px;
-    }
-
-    @media (max-width: 600px) {
-      .toolbar { padding: 6px 8px; gap: 6px; }
-      .toolbar select, .toolbar button { padding: 5px 8px; font-size: 12px; }
-      .session-legend { display: none; }
-    }
-  </style>
+  <link rel="stylesheet" href="/shared.css">
 </head>
 <body>
+  <nav class="nav">
+    <span class="logo">MMT Tools</span>
+    <a href="/" class="active">Session Candles</a>
+    <a href="/pivot.html">Pivot Analysis</a>
+  </nav>
+
   <div class="toolbar">
     <span class="label">Symbol</span>
     <select id="symbol-select">
@@ -132,9 +24,31 @@
 
     <span class="label">Exchange</span>
     <select id="exchange-select">
-      <option value="binancef">Binance</option>
-      <option value="bybitf">Bybit</option>
-      <option value="okxf">OKX</option>
+      <optgroup label="Futures (Linear)">
+        <option value="binancef">Binance Futures</option>
+        <option value="bybitf">Bybit Futures</option>
+        <option value="okxf">OKX Futures</option>
+        <option value="deribitf">Deribit Futures</option>
+        <option value="hyperliquid">Hyperliquid</option>
+        <option value="hyperliquid-xyz">Hyperliquid XYZ</option>
+        <option value="bitmexf">BitMEX Futures</option>
+        <option value="bitfinexf">Bitfinex Futures</option>
+        <option value="lighterf">Lighter</option>
+      </optgroup>
+      <optgroup label="Futures (Inverse)">
+        <option value="bybitf-inverse">Bybit Inverse</option>
+        <option value="bitmexf-inverse">BitMEX Inverse</option>
+        <option value="deribitf-inverse">Deribit Inverse</option>
+      </optgroup>
+      <optgroup label="Spot">
+        <option value="binance">Binance Spot</option>
+        <option value="bybit">Bybit Spot</option>
+        <option value="coinbase">Coinbase</option>
+        <option value="okx">OKX Spot</option>
+        <option value="deribit">Deribit Spot</option>
+        <option value="kraken">Kraken</option>
+        <option value="bitfinex">Bitfinex</option>
+      </optgroup>
     </select>
 
     <span class="label">Days</span>
@@ -145,13 +59,6 @@
       <option value="90">90</option>
       <option value="180">180</option>
     </select>
-
-    <div class="session-legend">
-      <span><span class="dot" style="background:#4A90D9"></span> Asia</span>
-      <span><span class="dot" style="background:#E6A817"></span> London</span>
-      <span><span class="dot" style="background:#D94A4A"></span> New York</span>
-      <span><span class="dot" style="background:#8B5CF6"></span> Close</span>
-    </div>
   </div>
 
   <div id="chart-container">
@@ -160,10 +67,10 @@
 
   <script>
     const SESSIONS = [
-      { name: 'Asia',     startHour: 0,  endHour: 6,  color: '#4A90D9', borderUp: '#5BA3E6', borderDown: '#3A78B8' },
-      { name: 'London',   startHour: 6,  endHour: 12, color: '#E6A817', borderUp: '#F0B82A', borderDown: '#C89210' },
-      { name: 'New York', startHour: 12, endHour: 20, color: '#D94A4A', borderUp: '#E65C5C', borderDown: '#BF3636' },
-      { name: 'Close',    startHour: 20, endHour: 24, color: '#8B5CF6', borderUp: '#9D70FF', borderDown: '#7648DB' },
+      { name: 'Asia',     startHour: 0,  endHour: 6  },
+      { name: 'London',   startHour: 6,  endHour: 12 },
+      { name: 'New York', startHour: 12, endHour: 20 },
+      { name: 'Close',    startHour: 20, endHour: 24 },
     ];
 
     const UP_COLOR = '#32D695';
@@ -174,89 +81,58 @@
 
     function initChart() {
       const container = document.getElementById('chart-container');
-
       chart = LightweightCharts.createChart(container, {
         layout: {
           background: { type: 'solid', color: BG_COLOR },
           textColor: '#888',
           fontFamily: '-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif',
         },
-        grid: {
-          vertLines: { color: '#1e1e1e' },
-          horzLines: { color: '#1e1e1e' },
-        },
+        grid: { vertLines: { color: '#1e1e1e' }, horzLines: { color: '#1e1e1e' } },
         crosshair: {
           mode: LightweightCharts.CrosshairMode.Normal,
           vertLine: { color: '#444', width: 1, style: 2 },
           horzLine: { color: '#444', width: 1, style: 2 },
         },
-        rightPriceScale: {
-          borderColor: '#2a2a2a',
-          scaleMargins: { top: 0.1, bottom: 0.1 },
-        },
-        timeScale: {
-          borderColor: '#2a2a2a',
-          timeVisible: true,
-          secondsVisible: false,
-        },
+        rightPriceScale: { borderColor: '#2a2a2a', scaleMargins: { top: 0.1, bottom: 0.1 } },
+        timeScale: { borderColor: '#2a2a2a', timeVisible: true, secondsVisible: false },
         handleScroll: true,
         handleScale: true,
       });
 
       candleSeries = chart.addCandlestickSeries({
-        upColor: UP_COLOR,
-        downColor: DOWN_COLOR,
-        borderUpColor: UP_COLOR,
-        borderDownColor: DOWN_COLOR,
-        wickUpColor: UP_COLOR,
-        wickDownColor: DOWN_COLOR,
+        upColor: UP_COLOR, downColor: DOWN_COLOR,
+        borderUpColor: UP_COLOR, borderDownColor: DOWN_COLOR,
+        wickUpColor: UP_COLOR, wickDownColor: DOWN_COLOR,
       });
 
-      // Responsive resize
       const ro = new ResizeObserver(() => {
-        chart.applyOptions({
-          width: container.clientWidth,
-          height: container.clientHeight,
-        });
+        chart.applyOptions({ width: container.clientWidth, height: container.clientHeight });
       });
       ro.observe(container);
     }
 
     function aggregateToSessions(candles) {
-      // candles are 1h, sort by time
       candles.sort((a, b) => a.t - b.t);
-
       const sessionCandles = [];
       let current = null;
 
       for (const c of candles) {
         const date = new Date(c.t * 1000);
         const hour = date.getUTCHours();
-
-        // Find which session this hour belongs to
         const session = SESSIONS.find(s => hour >= s.startHour && hour < s.endHour);
         if (!session) continue;
 
-        // Session key: date + session name
         const dayStr = date.toISOString().slice(0, 10);
-        // For Close session (20-24), it's same day
         const key = `${dayStr}-${session.name}`;
 
         if (!current || current._key !== key) {
-          // Start new session candle
           if (current) sessionCandles.push(current);
           current = {
-            _key: key,
-            time: c.t,
-            open: c.o,
-            high: c.h,
-            low: c.l,
-            close: c.c,
-            _session: session,
+            _key: key, time: c.t,
+            open: c.o, high: c.h, low: c.l, close: c.c,
             _volume: (c.vb || 0) + (c.vs || 0),
           };
         } else {
-          // Extend current session candle
           current.high = Math.max(current.high, c.h);
           current.low = Math.min(current.low, c.l);
           current.close = c.c;
@@ -264,35 +140,22 @@
         }
       }
       if (current) sessionCandles.push(current);
-
       return sessionCandles;
     }
 
-    function applySessionColors(sessionCandles) {
+    function colorize(sessionCandles) {
       return sessionCandles.map(sc => {
-        const isUp = sc.close >= sc.open;
-        const session = sc._session;
-        return {
-          time: sc.time,
-          open: sc.open,
-          high: sc.high,
-          low: sc.low,
-          close: sc.close,
-          color: isUp ? UP_COLOR : DOWN_COLOR,
-          borderColor: isUp ? session.borderUp : session.borderDown,
-          wickColor: session.color,
-        };
+        const color = sc.close >= sc.open ? UP_COLOR : DOWN_COLOR;
+        return { time: sc.time, open: sc.open, high: sc.high, low: sc.low, close: sc.close, color, borderColor: color, wickColor: color };
       });
     }
 
     async function fetchCandles(exchange, symbol, days) {
       const now = Math.floor(Date.now() / 1000);
       const from = now - days * 86400;
-
       const url = `/api/candles?exchange=${exchange}&symbol=${encodeURIComponent(symbol)}&tf=1h&from=${from}&to=${now}`;
       const resp = await fetch(url);
       const json = await resp.json();
-
       if (json.error) throw new Error(json.error);
       return json.data || [];
     }
@@ -300,7 +163,6 @@
     async function loadChart() {
       const loading = document.getElementById('loading');
       loading.style.display = 'block';
-
       const exchange = document.getElementById('exchange-select').value;
       const symbol = document.getElementById('symbol-select').value;
       const days = parseInt(document.getElementById('days-select').value);
@@ -308,8 +170,7 @@
       try {
         const raw = await fetchCandles(exchange, symbol, days);
         const sessions = aggregateToSessions(raw);
-        const colored = applySessionColors(sessions);
-
+        const colored = colorize(sessions);
         candleSeries.setData(colored);
         chart.timeScale().fitContent();
         loading.style.display = 'none';
@@ -319,11 +180,8 @@
       }
     }
 
-    // Init
     initChart();
     loadChart();
-
-    // Event listeners
     document.getElementById('symbol-select').addEventListener('change', loadChart);
     document.getElementById('exchange-select').addEventListener('change', loadChart);
     document.getElementById('days-select').addEventListener('change', loadChart);

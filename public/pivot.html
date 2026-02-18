@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Pivot Analysis</title>
+  <script src="https://unpkg.com/lightweight-charts@4/dist/lightweight-charts.standalone.production.js"></script>
+  <link rel="stylesheet" href="/shared.css">
+  <style>
+    .pivot-table {
+      background: #1e1e1e;
+      border: 1px solid #2a2a2a;
+      border-radius: 6px;
+      padding: 12px 16px;
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      z-index: 5;
+      min-width: 180px;
+      font-size: 13px;
+    }
+
+    .pivot-table h3 {
+      font-size: 12px;
+      color: #888;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .pivot-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 3px 0;
+      border-bottom: 1px solid #2a2a2a;
+    }
+
+    .pivot-row:last-child { border-bottom: none; }
+
+    .pivot-row .level-name {
+      font-weight: 500;
+    }
+
+    .pivot-row .level-price {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-weight: 600;
+    }
+
+    .pivot-row.resistance .level-name { color: #FF4C61; }
+    .pivot-row.resistance .level-price { color: #FF4C61; }
+    .pivot-row.pivot .level-name { color: #E6A817; }
+    .pivot-row.pivot .level-price { color: #E6A817; }
+    .pivot-row.support .level-name { color: #32D695; }
+    .pivot-row.support .level-price { color: #32D695; }
+
+    .pivot-type-btns {
+      display: flex;
+      gap: 4px;
+    }
+
+    .pivot-type-btns button {
+      font-size: 11px;
+      padding: 4px 8px;
+    }
+
+    @media (max-width: 600px) {
+      .pivot-table {
+        top: auto;
+        bottom: 8px;
+        right: 8px;
+        left: 8px;
+        min-width: unset;
+        font-size: 12px;
+        max-height: 40vh;
+        overflow-y: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <span class="logo">MMT Tools</span>
+    <a href="/">Session Candles</a>
+    <a href="/pivot.html" class="active">Pivot Analysis</a>
+  </nav>
+
+  <div class="toolbar">
+    <span class="label">Symbol</span>
+    <select id="symbol-select">
+      <option value="btc/usd">BTC/USD</option>
+      <option value="eth/usd">ETH/USD</option>
+      <option value="sol/usd">SOL/USD</option>
+    </select>
+
+    <span class="label">Exchange</span>
+    <select id="exchange-select">
+      <optgroup label="Futures (Linear)">
+        <option value="binancef">Binance Futures</option>
+        <option value="bybitf">Bybit Futures</option>
+        <option value="okxf">OKX Futures</option>
+        <option value="deribitf">Deribit Futures</option>
+        <option value="hyperliquid">Hyperliquid</option>
+        <option value="hyperliquid-xyz">Hyperliquid XYZ</option>
+        <option value="bitmexf">BitMEX Futures</option>
+        <option value="bitfinexf">Bitfinex Futures</option>
+        <option value="lighterf">Lighter</option>
+      </optgroup>
+      <optgroup label="Futures (Inverse)">
+        <option value="bybitf-inverse">Bybit Inverse</option>
+        <option value="bitmexf-inverse">BitMEX Inverse</option>
+        <option value="deribitf-inverse">Deribit Inverse</option>
+      </optgroup>
+      <optgroup label="Spot">
+        <option value="binance">Binance Spot</option>
+        <option value="bybit">Bybit Spot</option>
+        <option value="coinbase">Coinbase</option>
+        <option value="okx">OKX Spot</option>
+        <option value="deribit">Deribit Spot</option>
+        <option value="kraken">Kraken</option>
+        <option value="bitfinex">Bitfinex</option>
+      </optgroup>
+    </select>
+
+    <span class="label">Type</span>
+    <div class="pivot-type-btns">
+      <button class="active" data-type="classic">Classic</button>
+      <button data-type="fibonacci">Fib</button>
+      <button data-type="camarilla">Cam</button>
+      <button data-type="woodie">Woodie</button>
+    </div>
+  </div>
+
+  <div id="chart-container">
+    <div class="loading" id="loading">Loading pivot levels...</div>
+    <div class="pivot-table" id="pivot-table" style="display:none"></div>
+  </div>
+
+  <script>
+    const UP_COLOR = '#32D695';
+    const DOWN_COLOR = '#FF4C61';
+    const BG_COLOR = '#161616';
+    const PIVOT_COLOR = '#E6A817';
+
+    let chart, candleSeries, pivotLines = [];
+    let currentType = 'classic';
+
+    function initChart() {
+      const container = document.getElementById('chart-container');
+      chart = LightweightCharts.createChart(container, {
+        layout: {
+          background: { type: 'solid', color: BG_COLOR },
+          textColor: '#888',
+          fontFamily: '-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif',
+        },
+        grid: { vertLines: { color: '#1e1e1e' }, horzLines: { color: '#1e1e1e' } },
+        crosshair: {
+          mode: LightweightCharts.CrosshairMode.Normal,
+          vertLine: { color: '#444', width: 1, style: 2 },
+          horzLine: { color: '#444', width: 1, style: 2 },
+        },
+        rightPriceScale: { borderColor: '#2a2a2a', scaleMargins: { top: 0.05, bottom: 0.05 } },
+        timeScale: { borderColor: '#2a2a2a', timeVisible: true, secondsVisible: false },
+        handleScroll: true,
+        handleScale: true,
+      });
+
+      candleSeries = chart.addCandlestickSeries({
+        upColor: UP_COLOR, downColor: DOWN_COLOR,
+        borderUpColor: UP_COLOR, borderDownColor: DOWN_COLOR,
+        wickUpColor: UP_COLOR, wickDownColor: DOWN_COLOR,
+      });
+
+      const ro = new ResizeObserver(() => {
+        chart.applyOptions({ width: container.clientWidth, height: container.clientHeight });
+      });
+      ro.observe(container);
+    }
+
+    // ── Pivot Calculations ──
+    function calcPivots(type, h, l, c) {
+      const pp = (h + l + c) / 3;
+      const range = h - l;
+
+      if (type === 'classic') {
+        return {
+          'R3': h + 2 * (pp - l),
+          'R2': pp + range,
+          'R1': 2 * pp - l,
+          'PP': pp,
+          'S1': 2 * pp - h,
+          'S2': pp - range,
+          'S3': l - 2 * (h - pp),
+        };
+      }
+
+      if (type === 'fibonacci') {
+        return {
+          'R3': pp + 1.000 * range,
+          'R2': pp + 0.618 * range,
+          'R1': pp + 0.382 * range,
+          'PP': pp,
+          'S1': pp - 0.382 * range,
+          'S2': pp - 0.618 * range,
+          'S3': pp - 1.000 * range,
+        };
+      }
+
+      if (type === 'camarilla') {
+        return {
+          'R4': c + range * 1.1 / 2,
+          'R3': c + range * 1.1 / 4,
+          'R2': c + range * 1.1 / 6,
+          'R1': c + range * 1.1 / 12,
+          'PP': pp,
+          'S1': c - range * 1.1 / 12,
+          'S2': c - range * 1.1 / 6,
+          'S3': c - range * 1.1 / 4,
+          'S4': c - range * 1.1 / 2,
+        };
+      }
+
+      if (type === 'woodie') {
+        const wpp = (h + l + 2 * c) / 4;
+        return {
+          'R2': wpp + range,
+          'R1': 2 * wpp - l,
+          'PP': wpp,
+          'S1': 2 * wpp - h,
+          'S2': wpp - range,
+        };
+      }
+
+      return { 'PP': pp };
+    }
+
+    function removePivotLines() {
+      pivotLines.forEach(l => chart.removeSeries(l));
+      pivotLines = [];
+    }
+
+    function drawPivotLines(levels, fromTime, toTime) {
+      removePivotLines();
+
+      for (const [name, price] of Object.entries(levels)) {
+        const isR = name.startsWith('R');
+        const isS = name.startsWith('S');
+        const color = isR ? DOWN_COLOR : isS ? UP_COLOR : PIVOT_COLOR;
+
+        const line = chart.addLineSeries({
+          color: color,
+          lineWidth: 1,
+          lineStyle: name === 'PP' ? 0 : 2,
+          priceLineVisible: false,
+          lastValueVisible: true,
+          title: name,
+        });
+
+        line.setData([
+          { time: fromTime, value: price },
+          { time: toTime, value: price },
+        ]);
+
+        pivotLines.push(line);
+      }
+    }
+
+    function renderPivotTable(levels) {
+      const table = document.getElementById('pivot-table');
+      const entries = Object.entries(levels).sort((a, b) => b[1] - a[1]);
+
+      let html = `<h3>${currentType} Pivots (Daily)</h3>`;
+      for (const [name, price] of entries) {
+        const isR = name.startsWith('R');
+        const isS = name.startsWith('S');
+        const cls = isR ? 'resistance' : isS ? 'support' : 'pivot';
+        html += `<div class="pivot-row ${cls}">
+          <span class="level-name">${name}</span>
+          <span class="level-price">${price.toFixed(2)}</span>
+        </div>`;
+      }
+
+      table.innerHTML = html;
+      table.style.display = 'block';
+    }
+
+    async function fetchCandles(exchange, symbol, tf, days) {
+      const now = Math.floor(Date.now() / 1000);
+      const from = now - days * 86400;
+      const url = `/api/candles?exchange=${exchange}&symbol=${encodeURIComponent(symbol)}&tf=${tf}&from=${from}&to=${now}`;
+      const resp = await fetch(url);
+      const json = await resp.json();
+      if (json.error) throw new Error(json.error);
+      return json.data || [];
+    }
+
+    async function loadChart() {
+      const loading = document.getElementById('loading');
+      loading.style.display = 'block';
+      loading.textContent = 'Loading pivot levels...';
+
+      const exchange = document.getElementById('exchange-select').value;
+      const symbol = document.getElementById('symbol-select').value;
+
+      try {
+        // Fetch 1h candles for chart display (7 days)
+        const hourly = await fetchCandles(exchange, symbol, '1h', 7);
+        if (!hourly.length) throw new Error('No data');
+
+        const chartData = hourly.map(c => ({
+          time: c.t,
+          open: c.o, high: c.h, low: c.l, close: c.c,
+        }));
+        candleSeries.setData(chartData);
+
+        // Get yesterday's daily candle for pivot calc
+        const daily = await fetchCandles(exchange, symbol, '1d', 3);
+        if (daily.length >= 2) {
+          const prev = daily[daily.length - 2]; // yesterday
+          const levels = calcPivots(currentType, prev.h, prev.l, prev.c);
+
+          // Draw lines across today's range
+          const todayStart = daily[daily.length - 1].t;
+          const todayEnd = todayStart + 86400;
+          drawPivotLines(levels, todayStart, todayEnd);
+          renderPivotTable(levels);
+        }
+
+        chart.timeScale().fitContent();
+        loading.style.display = 'none';
+      } catch (err) {
+        loading.textContent = 'Error: ' + err.message;
+        console.error(err);
+      }
+    }
+
+    // Init
+    initChart();
+    loadChart();
+
+    document.getElementById('symbol-select').addEventListener('change', loadChart);
+    document.getElementById('exchange-select').addEventListener('change', loadChart);
+
+    // Pivot type buttons
+    document.querySelectorAll('.pivot-type-btns button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.pivot-type-btns button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentType = btn.dataset.type;
+        loadChart();
+      });
+    });
+  </script>
+</body>
+</html>
