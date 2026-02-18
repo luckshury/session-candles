@@ -446,11 +446,10 @@
 
     // ── Calculate Daily Pivots ──
     function calculateDailyPivots(candles) {
-      // Group by UTC day
+      // STEP 1: Group candles by UTC date
       const days = {};
       for (const c of candles) {
-        const d = new Date(c.timestamp);
-        const key = d.toISOString().slice(0, 10);
+        const key = new Date(c.timestamp).toISOString().slice(0, 10);
         if (!days[key]) days[key] = [];
         days[key].push(c);
       }
@@ -459,46 +458,68 @@
       for (const [date, dayCandles] of Object.entries(days)) {
         if (dayCandles.length < 12) continue; // skip incomplete days
 
+        // Sort chronologically
         dayCandles.sort((a, b) => a.timestamp - b.timestamp);
 
         const dayOpen = dayCandles[0].open;
-        let highVal = -Infinity, lowVal = Infinity;
-        let highHour = 0, lowHour = 0;
-        let highTime = 0, lowTime = 0;
+        const dayClose = dayCandles[dayCandles.length - 1].close;
+        const dayOfWeek = new Date(dayCandles[0].timestamp).getUTCDay();
 
+        // STEP 3: Find absolute daily high and low
+        let dailyHigh = -Infinity, dailyLow = Infinity;
         for (const c of dayCandles) {
-          if (c.high > highVal) {
-            highVal = c.high;
-            highHour = c.hour;
-            highTime = c.timestamp;
-          }
-          if (c.low < lowVal) {
-            lowVal = c.low;
-            lowHour = c.hour;
-            lowTime = c.timestamp;
-          }
+          if (c.high > dailyHigh) dailyHigh = c.high;
+          if (c.low < dailyLow) dailyLow = c.low;
         }
 
-        const highFirst = highTime <= lowTime;
-        const dayOfWeek = new Date(dayCandles[0].timestamp).getUTCDay();
-        const dayClose = dayCandles[dayCandles.length - 1].close;
+        // STEP 4: Find WHEN each extreme was FIRST reached
+        let firstHighHour = -1, firstLowHour = -1;
+        let firstHighTimestamp = Infinity, firstLowTimestamp = Infinity;
 
-        const p1 = highFirst
-          ? { price: highVal, hour: highHour, type: 'high' }
-          : { price: lowVal, hour: lowHour, type: 'low' };
+        for (const c of dayCandles) {
+          // Did this candle first reach the daily high?
+          if (firstHighHour === -1 && c.high >= dailyHigh) {
+            firstHighHour = c.hour;
+            firstHighTimestamp = c.timestamp;
+          }
+          // Did this candle first reach the daily low?
+          if (firstLowHour === -1 && c.low <= dailyLow) {
+            firstLowHour = c.hour;
+            firstLowTimestamp = c.timestamp;
+          }
+          // Exit early if both found
+          if (firstHighHour !== -1 && firstLowHour !== -1) break;
+        }
 
-        const p2 = highFirst
-          ? { price: lowVal, hour: lowHour, type: 'low' }
-          : { price: highVal, hour: highHour, type: 'high' };
+        // STEP 5: Handle same-hour case (high and low in same candle)
+        let highCameFirst;
+        if (firstHighTimestamp === firstLowTimestamp) {
+          // Use OHLC logic: if bearish candle, high came first
+          const candle = dayCandles.find(c => c.timestamp === firstHighTimestamp);
+          const isBullish = candle && candle.close >= candle.open;
+          highCameFirst = !isBullish;
+        } else {
+          highCameFirst = firstHighTimestamp < firstLowTimestamp;
+        }
+
+        // STEP 6: Assign P1 and P2
+        const p1 = highCameFirst
+          ? { price: dailyHigh, hour: firstHighHour, type: 'high' }
+          : { price: dailyLow, hour: firstLowHour, type: 'low' };
+
+        const p2 = highCameFirst
+          ? { price: dailyLow, hour: firstLowHour, type: 'low' }
+          : { price: dailyHigh, hour: firstHighHour, type: 'high' };
 
         const openToP1 = Math.abs(p1.price - dayOpen) / dayOpen * 100;
         const p1ToP2 = Math.abs(p2.price - p1.price) / p1.price * 100;
-        const range = (highVal - lowVal) / lowVal * 100;
+        const range = (dailyHigh - dailyLow) / dailyLow * 100;
 
         pivots.push({
           date, dayOfWeek, dayOpen, dayClose,
-          high: highVal, low: lowVal, range,
-          p1, p2, openToP1, p1ToP2,
+          high: dailyHigh, low: dailyLow,
+          highHour: firstHighHour, lowHour: firstLowHour,
+          range, p1, p2, openToP1, p1ToP2,
         });
       }
 
