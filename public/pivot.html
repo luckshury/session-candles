@@ -530,7 +530,10 @@
 
       const pivots = [];
       for (const [date, dayCandles] of Object.entries(days)) {
-        if (dayCandles.length < 12) continue;
+        const todayDate = new Date().toISOString().slice(0, 10);
+        const isCurrentDay = date === todayDate;
+        if (!isCurrentDay && dayCandles.length < 12) continue;
+        if (isCurrentDay && dayCandles.length < 2) continue;
         dayCandles.sort((a, b) => a.timestamp - b.timestamp);
 
         const dayOpen = dayCandles[0].open;
