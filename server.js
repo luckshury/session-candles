@@ -3,7 +3,7 @@ const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const API_KEY = process.env.MMT_API_KEY || 'sk_31d1c1a1ef3e55eaed1a6de7bf11ef22';
+const API_KEY = process.env.MMT_API_KEY || '';
 const BASE_URL = 'https://eu-central-1.mmt.gg/api/v1';
 
 app.use(express.static(path.join(__dirname, 'public')));
