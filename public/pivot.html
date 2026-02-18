@@ -100,30 +100,44 @@
       z-index: 2;
     }
     .prob-table td {
-      padding: 5px 8px;
-      border-bottom: 1px solid #222;
+      padding: 8px 10px;
+      border-bottom: none;
       font-family: 'SF Mono', 'Fira Code', monospace;
-      font-size: 12px;
+      font-size: 13px;
     }
-    .prob-table tr:hover td { background: #252525; }
-    .prob-table tr.current-hour td {
+    .prob-table tr.current-hour {
       outline: 2px solid #32D695;
       outline-offset: -1px;
     }
 
-    .prob-table .pct-bar {
-      display: inline-block;
-      height: 14px;
-      border-radius: 2px;
-      vertical-align: middle;
-      margin-right: 6px;
-      min-width: 2px;
+    .prob-table td.heatmap-cell {
+      text-align: right;
+      font-weight: 500;
+      padding: 8px 12px;
     }
 
-    .session-asia td:first-child { border-left: 3px solid #4A90D9; }
-    .session-london td:first-child { border-left: 3px solid #E6A817; }
-    .session-ny td:first-child { border-left: 3px solid #D94A4A; }
-    .session-close td:first-child { border-left: 3px solid #8B5CF6; }
+    .prob-table td.last-col {
+      text-align: right;
+      color: #666;
+      font-size: 11px;
+      padding-right: 12px;
+    }
+
+    .prob-table td.hour-col {
+      color: #ccc;
+      padding-left: 12px;
+    }
+
+    .prob-table .check {
+      color: #fff;
+      font-size: 11px;
+      margin-right: 4px;
+    }
+
+    .session-asia td.hour-col { border-left: 3px solid #4A90D9; }
+    .session-london td.hour-col { border-left: 3px solid #E6A817; }
+    .session-ny td.hour-col { border-left: 3px solid #D94A4A; }
+    .session-close td.hour-col { border-left: 3px solid #8B5CF6; }
 
     .last-cell { cursor: pointer; color: #4A90D9; text-decoration: underline; text-decoration-style: dotted; }
     .last-cell:hover { color: #6AB0F9; }
@@ -287,11 +301,48 @@
     .weekday-filter button { font-size: 11px; padding: 4px 6px; min-width: 32px; }
     .weekday-filter button.active { background: #32D695; color: #161616; border-color: #32D695; }
 
+    /* ── Footer ── */
+    .footer-bar {
+      height: 30px;
+      background: #1a1a1a;
+      border-top: 1px solid #2a2a2a;
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      font-size: 12px;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      color: #666;
+      flex-shrink: 0;
+    }
+    .footer-bar strong { color: #e0e0e0; }
+
+    /* ── Today Chart ── */
+    #today-chart {
+      width: 100%;
+      height: 180px;
+      margin-top: 12px;
+    }
+
+    /* ── Insights monospace ── */
+    .insights-mono {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 12px;
+      line-height: 1.6;
+      color: #aaa;
+    }
+    .insights-mono strong { color: #e0e0e0; font-weight: 700; }
+    .insights-mono .section-title { color: #e0e0e0; font-weight: 700; font-size: 13px; margin-top: 14px; display: block; }
+    .insights-mono .indent { padding-left: 16px; }
+    .insights-mono .moderate { color: #E6A817; font-weight: 700; }
+    .insights-mono .unlikely { color: #32D695; font-weight: 700; }
+    .insights-mono .likely { color: #FF4C61; font-weight: 700; }
+
     @media (max-width: 600px) {
       .content { padding: 10px; gap: 10px; }
       .tabs button { padding: 8px 12px; font-size: 12px; }
     }
   </style>
+  <script src="https://unpkg.com/lightweight-charts@4/dist/lightweight-charts.standalone.production.js"></script>
 </head>
 <body>
   <nav class="nav">
@@ -361,7 +412,7 @@
     <span class="label scheme-select">Colors</span>
     <select id="scheme-select">
       <option value="green">Green</option>
-      <option value="viridis">Viridis</option>
+      <option value="viridis" selected>Viridis</option>
       <option value="plasma">Plasma</option>
       <option value="inferno">Inferno</option>
       <option value="turbo">Turbo</option>
@@ -379,6 +430,8 @@
     <div style="text-align:center;padding:40px;color:#666;">Loading pivot data...</div>
   </div>
 
+  <div class="footer-bar" id="footer-bar">Days: <strong id="footer-days">—</strong> &nbsp;&nbsp; Scheme: <strong id="footer-scheme">Viridis</strong></div>
+
   <script>
     // ── State ──
     let allPivots = [];
@@ -388,7 +441,7 @@
     let weekdayFilter = 'all';
     let activeTab = 'time';
     let activeSubTab = 'daily';
-    let colorScheme = 'green';
+    let colorScheme = 'viridis';
     let activePopover = null;
     let highlightedInsight = null;
 
@@ -821,6 +874,15 @@
       };
     }
 
+    // ── Text color contrast ──
+    function textColor(bg) {
+      if (!bg || bg === '#252525') return '#ffffff';
+      const m = bg.match(/rgb\((\d+),(\d+),(\d+)\)/);
+      if (!m) return '#ffffff';
+      const lum = (0.299 * +m[1] + 0.587 * +m[2] + 0.114 * +m[3]) / 255;
+      return lum > 0.5 ? '#000000' : '#ffffff';
+    }
+
     // ── Render: TIME > Daily ──
     function renderTimeDaily() {
       const pivots = filteredPivots;
@@ -832,6 +894,31 @@
       const maxP2 = Math.max(...hourlyStats.p2);
       const currentHour = new Date().getUTCHours();
 
+      // Today's pivot hours for checkmarks
+      const today = insights.today;
+      const todayP1Hour = today ? today.p1.hour : -1;
+      const todayP2Hour = today ? today.p2.hour : -1;
+
+      // P1 status metrics
+      let p1FormedAfterPct = 0, p1FormedAtOrAfterP2Pct = 0;
+      let p2FormedAfterPct = 0, p2FormedAfterP2Pct = 0;
+      if (today) {
+        p1FormedAfterPct = pivots.filter(p => p.p1.hour > todayP1Hour).length / pivots.length * 100;
+        p1FormedAtOrAfterP2Pct = pivots.filter(p => p.p1.hour >= todayP2Hour).length / pivots.length * 100;
+        p2FormedAfterPct = pivots.filter(p => p.p2.hour > todayP2Hour).length / pivots.length * 100;
+        p2FormedAfterP2Pct = pivots.filter(p => p.p2.hour > todayP2Hour).length / pivots.length * 100;
+      }
+
+      // Flip risk
+      const flipRiskPct = today ? pivots.slice(0, -1).filter(p => {
+        const dist = (p.p1.price - p.dayOpen) / p.dayOpen * 100;
+        const todayDist = (today.p1.price - today.dayOpen) / today.dayOpen * 100;
+        return today.p1.type === 'low' ? dist < todayDist : dist > todayDist;
+      }).length / Math.max(pivots.length - 1, 1) * 100 : 0;
+
+      // P2 completion
+      const p2NewAfterPct = today ? pivots.filter(p => p.p2.hour > todayP2Hour).length / pivots.length * 100 : 0;
+
       let tableRows = '';
       for (let h = 0; h < 24; h++) {
         const isCurrent = h === currentHour;
@@ -840,75 +927,77 @@
         const p2Pct = hourlyStats.p2[h];
         const p1Last = hourlyStats.lastP1DaysAgo[h];
         const p2Last = hourlyStats.lastP2DaysAgo[h];
-        const p1Width = maxP1 > 0 ? (p1Pct / maxP1 * 60) : 0;
-        const p2Width = maxP2 > 0 ? (p2Pct / maxP2 * 60) : 0;
+        const p1Bg = schemeColor(p1Pct, maxP1);
+        const p2Bg = schemeColor(p2Pct, maxP2);
+        const p1Check = h === todayP1Hour ? '<span class="check">✓</span>' : '';
+        const p2Check = h === todayP2Hour ? '<span class="check">✓</span>' : '';
 
         tableRows += `<tr class="${sessClass}${isCurrent ? ' current-hour' : ''}">
-          <td style="color:#aaa">${String(h).padStart(2,'0')}:00</td>
-          <td><span class="pct-bar" style="width:${p1Width}px;background:${schemeColor(p1Pct, maxP1)}"></span>${p1Pct.toFixed(1)}%</td>
-          <td class="last-cell" data-type="p1" data-hour="${h}">${p1Last !== null ? p1Last + 'd' : '—'}</td>
-          <td><span class="pct-bar" style="width:${p2Width}px;background:${schemeColor(p2Pct, maxP2)}"></span>${p2Pct.toFixed(1)}%</td>
-          <td class="last-cell" data-type="p2" data-hour="${h}">${p2Last !== null ? p2Last + 'd' : '—'}</td>
+          <td class="hour-col">${String(h).padStart(2,'0')}:00</td>
+          <td class="heatmap-cell" style="background:${p1Bg};color:${textColor(p1Bg)}">${p1Check}${p1Pct.toFixed(1)}</td>
+          <td class="last-col last-cell" data-type="p1" data-hour="${h}">${p1Last !== null ? p1Last + 'd' : '-'}</td>
+          <td class="heatmap-cell" style="background:${p2Bg};color:${textColor(p2Bg)}">${p2Check}${p2Pct.toFixed(1)}</td>
+          <td class="last-col last-cell" data-type="p2" data-hour="${h}">${p2Last !== null ? p2Last + 'd' : '-'}</td>
         </tr>`;
       }
 
-      const flipColor = insights.flipRiskPct > 40 ? 'red' : insights.flipRiskPct > 20 ? 'yellow' : 'green';
-      const p2Color = insights.p2CompletionPct > 50 ? 'red' : insights.p2CompletionPct > 20 ? 'yellow' : 'green';
-      const indClass = c => c === 'red' ? 'ind-red' : c === 'yellow' ? 'ind-yellow' : 'ind-green';
+      const flipLabel = flipRiskPct > 40 ? 'likely' : flipRiskPct > 20 ? 'moderate' : 'unlikely';
+      const p2Label = p2NewAfterPct > 50 ? 'unlikely' : p2NewAfterPct > 20 ? 'moderate' : 'likely';
 
       let html = `<div class="sub-tabs" id="sub-tabs">
         <button class="active" data-sub="daily">Daily</button>
         <button data-sub="weekly">Weekly</button>
+        <button data-sub="session">Session</button>
       </div>
       <div class="split-60-40">
-        <div class="card">
-          <h2>Hourly P1/P2 Probability</h2>
-          <div class="table-scroll">
+        <div class="card" style="padding:0;overflow:hidden">
+          <div class="table-scroll" style="max-height:none">
             <table class="prob-table" id="prob-table">
-              <thead><tr><th>Hour</th><th>P1%</th><th>Last</th><th>P2%</th><th>Last</th></tr></thead>
+              <thead><tr>
+                <th style="padding-left:12px">Hour</th>
+                <th style="text-align:right;padding-right:12px">P1 %</th>
+                <th style="text-align:right">Last</th>
+                <th style="text-align:right;padding-right:12px">P2 %</th>
+                <th style="text-align:right;padding-right:12px">Last</th>
+              </tr></thead>
               <tbody>${tableRows}</tbody>
             </table>
           </div>
         </div>
         <div class="card">
-          <h2>Key Insights</h2>
-          <div class="insight-section">
-            <h3>Current State</h3>
-            <div class="insight-row"><span class="insight-label">Data Points</span><span class="insight-val">${insights.totalDays} days</span></div>
-            <div class="insight-row"><span class="insight-label">Asset</span><span class="insight-val">${document.getElementById('symbol-select').value.toUpperCase()}</span></div>
-            ${insights.today ? `
-            <div class="insight-row"><span class="insight-label">Current P1</span><span class="insight-val ${insights.today.p1.type === 'high' ? 'p1-high' : 'p1-low'}">${insights.today.p1.type.toUpperCase()} @ ${insights.today.p1.hour}:00 — ${insights.today.p1.price.toFixed(2)}</span></div>
-            <div class="insight-row"><span class="insight-label">Current P2</span><span class="insight-val ${insights.today.p2.type === 'high' ? 'p1-high' : 'p1-low'}">${insights.today.p2.type.toUpperCase()} @ ${insights.today.p2.hour}:00 — ${insights.today.p2.price.toFixed(2)}</span></div>
+          <h2 style="font-size:16px;color:#e0e0e0;font-weight:700;margin-bottom:16px">Key Insights</h2>
+          <div class="insights-mono">
+            <div><strong>${insights.totalDays}</strong> data points used - stats are reliable</div>
+
+            <span class="section-title">Asset: ${document.getElementById('symbol-select').value.toUpperCase()}</span>
+            ${today ? `
+            <div class="indent">Current P1: Daily ${today.p1.type} (${String(today.p1.hour).padStart(2,'0')}:00)</div>
+            <div class="indent">Current P2: Daily ${today.p2.type} (${String(today.p2.hour).padStart(2,'0')}:00)</div>
             ` : ''}
-          </div>
-          <div class="insight-section">
-            <h3>P1 Status</h3>
-            <div class="insight-row"><span class="insight-label">P1 formed by now</span><span class="insight-val">${insights.p1BeforeNow.toFixed(0)}%</span></div>
-            <div class="insight-row"><span class="insight-label">High-first bias</span><span class="insight-val">${insights.highFirstPct.toFixed(0)}%</span></div>
-          </div>
-          <div class="insight-section">
-            <h3>Distance Summary</h3>
-            <div class="insight-row"><span class="insight-label">Avg Open→P1</span><span class="insight-val">${insights.openToP1Stats.mean.toFixed(2)}%</span></div>
-            <div class="insight-row"><span class="insight-label">Avg P1→P2</span><span class="insight-val">${insights.p1ToP2Stats.mean.toFixed(2)}%</span></div>
-            <div class="insight-row"><span class="insight-label">Avg Range</span><span class="insight-val">${insights.avgRange.toFixed(2)}%</span></div>
-          </div>
-          <div class="insight-section">
-            <h3>Risk Indicators</h3>
-            <div class="insight-row" style="border-left-color:${flipColor === 'red' ? '#FF4C61' : flipColor === 'yellow' ? '#E6A817' : '#32D695'}">
-              <span class="insight-label">Flip Risk</span>
-              <span class="insight-val">${insights.flipRiskPct.toFixed(0)}% <span class="indicator ${indClass(flipColor)}"></span></span>
-            </div>
-            <div class="insight-row" style="border-left-color:${p2Color === 'red' ? '#FF4C61' : p2Color === 'yellow' ? '#E6A817' : '#32D695'}">
-              <span class="insight-label">P2 Completion</span>
-              <span class="insight-val">${insights.p2CompletionPct.toFixed(0)}% more expected <span class="indicator ${indClass(p2Color)}"></span></span>
-            </div>
+
+            <span class="section-title">P1 Status</span>
+            <div class="indent">${p1FormedAfterPct.toFixed(1)}% of P1's formed after ${String(todayP1Hour).padStart(2,'0')}:00</div>
+            <div class="indent">${p1FormedAtOrAfterP2Pct.toFixed(1)}% of P1's formed at or after ${String(todayP2Hour).padStart(2,'0')}:00</div>
+
+            <span class="section-title">P2 Status</span>
+            <div class="indent">${p2FormedAfterPct.toFixed(1)}% of P2's formed after ${String(todayP2Hour).padStart(2,'0')}:00</div>
+            <div class="indent">${p2FormedAfterP2Pct.toFixed(1)}% of P2's formed after ${String(todayP2Hour).padStart(2,'0')}:00</div>
+
+            <span class="section-title">Summary</span>
+            <div class="indent"><span class="${flipLabel === 'likely' ? 'likely' : flipLabel === 'moderate' ? 'moderate' : 'unlikely'}">${flipLabel === 'likely' ? 'Likely' : flipLabel === 'moderate' ? 'Moderate' : 'Low'}</span> P1 flip risk – ${flipRiskPct.toFixed(1)}% of days took out the daily ${today ? today.p1.type : 'low'}</div>
+            <div class="indent"><span class="${p2Label === 'unlikely' ? 'unlikely' : p2Label === 'moderate' ? 'moderate' : 'likely'}">${p2Label === 'unlikely' ? 'Unlikely' : p2Label === 'moderate' ? 'Possible' : 'Likely'}</span> P2 is in – ${p2NewAfterPct.toFixed(1)}% of days form a new P2 after ${String(todayP2Hour).padStart(2,'0')}:00</div>
+
+            <span class="section-title">Today's Price Action</span>
+            <div id="today-chart"></div>
           </div>
         </div>
       </div>`;
 
       setContent(html);
+      updateFooter();
       bindSubTabs();
       bindLastCells(hourlyStats);
+      renderTodayChart();
     }
 
     // ── Render: TIME > Weekly ──
@@ -1361,6 +1450,56 @@
       });
     }
 
+    // ── Today's Price Action Chart ──
+    function renderTodayChart() {
+      const container = document.getElementById('today-chart');
+      if (!container || typeof LightweightCharts === 'undefined') return;
+
+      // Get today's candles
+      const todayStr = new Date().toISOString().slice(0, 10);
+      const todayCandles = hourlyCandles.filter(c => {
+        return new Date(c.timestamp).toISOString().slice(0, 10) === todayStr;
+      }).sort((a, b) => a.timestamp - b.timestamp);
+
+      if (!todayCandles.length) return;
+
+      const chart = LightweightCharts.createChart(container, {
+        width: container.clientWidth,
+        height: 180,
+        layout: {
+          background: { type: 'solid', color: '#1e1e1e' },
+          textColor: '#666',
+          fontFamily: 'SF Mono, Fira Code, monospace',
+          fontSize: 10,
+        },
+        grid: { vertLines: { color: '#2a2a2a' }, horzLines: { color: '#2a2a2a' } },
+        rightPriceScale: { borderColor: '#2a2a2a' },
+        timeScale: { borderColor: '#2a2a2a', timeVisible: true, secondsVisible: false },
+        crosshair: { mode: 0 },
+      });
+
+      const lineSeries = chart.addLineSeries({
+        color: '#32D695',
+        lineWidth: 2,
+        priceLineVisible: false,
+        lastValueVisible: false,
+      });
+
+      lineSeries.setData(todayCandles.map(c => ({
+        time: Math.floor(c.timestamp / 1000),
+        value: c.close,
+      })));
+
+      chart.timeScale().fitContent();
+    }
+
+    function updateFooter() {
+      const fd = document.getElementById('footer-days');
+      const fs = document.getElementById('footer-scheme');
+      if (fd) fd.textContent = filteredPivots.length;
+      if (fs) fs.textContent = colorScheme.charAt(0).toUpperCase() + colorScheme.slice(1);
+    }
+
     function renderActive() {
       closePopover();
       if (activeTab === 'time') {
@@ -1412,6 +1551,7 @@
     document.getElementById('scheme-select').addEventListener('change', (e) => {
       colorScheme = e.target.value;
       renderActive();
+      updateFooter();
     });
 
     document.getElementById('weekday-filter').addEventListener('click', (e) => {
