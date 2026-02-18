@@ -569,7 +569,7 @@
       return { mean, median, min: sorted[0], max: sorted[sorted.length - 1], stdev: Math.sqrt(variance) };
     }
 
-    function buildHistogram(values, bins = 30) {
+    function buildHistogram(values, bins = 34) {
       if (!values.length) return { bins: [], min: 0, max: 0 };
       const min = Math.min(...values);
       const max = Math.max(...values);
