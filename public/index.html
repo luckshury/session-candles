@@ -15,13 +15,6 @@
   </nav>
 
   <div class="toolbar">
-    <span class="label">Symbol</span>
-    <select id="symbol-select">
-      <option value="btc/usd">BTC/USD</option>
-      <option value="eth/usd">ETH/USD</option>
-      <option value="sol/usd">SOL/USD</option>
-    </select>
-
     <span class="label">Exchange</span>
     <select id="exchange-select">
       <optgroup label="Futures (Linear)">
@@ -29,7 +22,7 @@
         <option value="bybitf">Bybit Futures</option>
         <option value="okxf">OKX Futures</option>
         <option value="deribitf">Deribit Futures</option>
-        <option value="hyperliquid">Hyperliquid</option>
+        <option value="hyperliquid" selected>Hyperliquid</option>
         <option value="hyperliquid-xyz">Hyperliquid XYZ</option>
         <option value="bitmexf">BitMEX Futures</option>
         <option value="bitfinexf">Bitfinex Futures</option>
@@ -49,6 +42,11 @@
         <option value="kraken">Kraken</option>
         <option value="bitfinex">Bitfinex</option>
       </optgroup>
+    </select>
+
+    <span class="label">Symbol</span>
+    <select id="symbol-select">
+      <option value="btc/usd">BTC/USD</option>
     </select>
 
     <span class="label">Days</span>
@@ -180,10 +178,38 @@
       }
     }
 
+    async function loadSymbols(exchange, preferred) {
+      const sel = document.getElementById('symbol-select');
+      sel.innerHTML = '<option value="">Loading...</option>';
+      sel.disabled = true;
+      try {
+        const resp = await fetch(`/api/markets?exchange=${exchange}`);
+        const data = await resp.json();
+        const symbols = (data.exchanges?.[0]?.symbols || [])
+          .map(s => s.symbol)
+          .sort((a, b) => a.localeCompare(b));
+        sel.innerHTML = symbols.map(s =>
+          `<option value="${s}">${s.toUpperCase()}</option>`
+        ).join('');
+        const prev = preferred || 'btc/usd';
+        if (symbols.includes(prev)) sel.value = prev;
+        else if (symbols.includes('btc/usd')) sel.value = 'btc/usd';
+        else sel.value = symbols[0] || '';
+      } catch (e) {
+        sel.innerHTML = '<option value="btc/usd">BTC/USD</option>';
+        console.error('Failed to load symbols:', e);
+      }
+      sel.disabled = false;
+    }
+
     initChart();
-    loadChart();
+    loadSymbols(document.getElementById('exchange-select').value).then(() => loadChart());
     document.getElementById('symbol-select').addEventListener('change', loadChart);
-    document.getElementById('exchange-select').addEventListener('change', loadChart);
+    document.getElementById('exchange-select').addEventListener('change', async () => {
+      const prev = document.getElementById('symbol-select').value;
+      await loadSymbols(document.getElementById('exchange-select').value, prev);
+      loadChart();
+    });
     document.getElementById('days-select').addEventListener('change', loadChart);
   </script>
 </body>
