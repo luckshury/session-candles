@@ -185,8 +185,10 @@
       try {
         const resp = await fetch(`/api/markets?exchange=${exchange}`);
         const data = await resp.json();
-        const symbols = (data.exchanges?.[0]?.symbols || [])
+        const exData = (data.exchanges || []).find(e => e.id === exchange) || data.exchanges?.[0];
+        const symbols = (exData?.symbols || [])
           .map(s => s.symbol)
+          .filter(Boolean)
           .sort((a, b) => a.localeCompare(b));
         sel.innerHTML = symbols.map(s =>
           `<option value="${s}">${s.toUpperCase()}</option>`
